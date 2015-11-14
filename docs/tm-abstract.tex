@@ -1,0 +1,19 @@
+\documentclass[a4paper]{article}
+\usepackage[usenames]{color} %used for font color
+\usepackage{hyperref}
+\title{Location Extraction based on Tweets, without an external datasource}
+\author{Erdi \c{C}all{\i}\\s4600673}
+\date{27 September 2015}
+
+\begin{document}
+
+\maketitle
+\section*{Research Question}
+Is it possible to extract location from Tweets without using an external data source?
+\section*{Description}
+In this study I want to try to classify twitter users with locations, only using the data provided by twitter. I don't think I can create a very high precision algorithm in the context of this research, but I want to show that, using this method, we can get to a precision and I want to discuss how it can be improved or why it did not work. I'm not planning on using any external data source (e.g. Foursquare) to tag user locations, as some of the other studies\footnote{http://www3.ntu.edu.sg/home/axsun/paper/Sigir14Petar\_CR.pdf} do. 
+\section*{Data}
+Twitter users can select to share their location and Twitter provides geo-location data for those tweets.
+\section*{Method}
+I'm planning on applying the $LDA$ algorithm on geo-tagged tweets with a hope to find an underlying topic model for different locations. I'm also planning on trying a \href{https://github.com/kzhai/InfVocLDA}{\underline{Streaming LDA implementation}}. Which would serve the purpose of updating location topic model and possibly user locations over time.
+\end{document}
