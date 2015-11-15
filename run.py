@@ -1,3 +1,4 @@
+# coding=utf-8
 from data import MongoDB
 from reader import TweetReader
 from settings import twitter_config, mongod_config

@@ -1,3 +1,4 @@
+# coding=utf-8
 class ChunkedStream:
     def __init__(self, chunk_size=10, total_chunks=10):
         self.chunk_size = chunk_size

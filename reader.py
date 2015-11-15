@@ -1,4 +1,6 @@
+# coding=utf-8
 import twitter
+
 from helpers import ChunkedStream
 
 
@@ -20,6 +22,3 @@ class TweetReader:
                 if sample['geo'] is not None and sample['geo']['type'] == u"Point":
                     print("yielding")
                     yield sample
-
-
-
