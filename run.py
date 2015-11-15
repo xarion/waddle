@@ -1,7 +1,8 @@
+from data import MongoDB
 from reader import TweetReader
-from settings import twitter_config
+from settings import twitter_config, mongod_config
 
+mongodb = MongoDB(mongod_config)
 reader = TweetReader(twitter_config)
 
-for sample in reader.get_tweet_samples_with_location():
-    print sample
+mongodb.write_stream(reader.get_sample_stream_with_location())
