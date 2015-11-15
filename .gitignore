@@ -63,3 +63,6 @@ docs/*.out
 # PyCharm
 .idea
 .idea/*
+
+# Application Configuration
+config
