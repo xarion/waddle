@@ -9,3 +9,7 @@ access_token_secret=access_token_secret
 [mongod]
 connection_string=mongodb://localhost:27017/
 database_name=waddle
+
+[streaming]
+chunk_size=10
+total_chunks=10

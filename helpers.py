@@ -1,8 +1,12 @@
 # coding=utf-8
+from settings import streaming_config
+
+
 class ChunkedStream:
-    def __init__(self, chunk_size=10, total_chunks=10):
-        self.chunk_size = chunk_size
-        self.total_chunks = total_chunks
+
+    def __init__(self):
+        self.chunk_size = streaming_config["chunk_size"]
+        self.total_chunks = streaming_config["total_chunks"]
         self.stream = None
 
     def __call__(self, f):

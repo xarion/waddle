@@ -14,7 +14,7 @@ class TweetReader:
     def get_sample_stream(self):
         return self.api.GetStreamSample()
 
-    @ChunkedStream(chunk_size=2)
+    @ChunkedStream()
     def get_sample_stream_with_location(self):  # training data
         stream = self.get_sample_stream()
         for sample in stream:

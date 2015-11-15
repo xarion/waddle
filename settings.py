@@ -13,3 +13,7 @@ twitter_config['access_token_secret'] = configParser.get('twitter', 'access_toke
 mongod_config = dict()
 mongod_config['connection_string'] = configParser.get('mongod', 'connection_string')
 mongod_config['database_name'] = configParser.get('mongod', 'database_name')
+
+streaming_config = dict()
+streaming_config['chunk_size'] = int(configParser.get('streaming', 'chunk_size'))
+streaming_config['total_chunks'] = int(configParser.get('streaming', 'total_chunks'))
