@@ -15,7 +15,7 @@ class ChunkedStream:
 
             chunk_count = 0
             current_chunk = []
-            while chunk_count < self.total_chunks:
+            while chunk_count < self.total_chunks or self.total_chunks != -1:
                 current_chunk.append(self.stream.next())
                 if len(current_chunk) >= self.chunk_size:
                     yield current_chunk
