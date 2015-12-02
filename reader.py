@@ -25,3 +25,6 @@ class TweetReader:
                         and sample['place']['country_code'] is "US":
                     print("yielding")
                     yield sample
+
+    def get_last_tweets_of_user(self, user):
+        return self.api.GetUserTimeline(user)
