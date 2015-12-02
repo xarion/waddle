@@ -20,6 +20,8 @@ class TweetReader:
         stream = self.get_sample_stream()
         for sample in stream:
             if 'contributors' in sample:  # this is a tweet
-                if sample['geo'] is not None and sample['geo']['type'] == u"Point":
+                if sample['geo'] is not None \
+                        and sample['geo']['type'] is u"Point" \
+                        and sample['place']['country_code'] is "US":
                     print("yielding")
                     yield sample
