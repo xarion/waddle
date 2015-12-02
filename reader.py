@@ -22,7 +22,8 @@ class TweetReader:
             if 'contributors' in sample:  # this is a tweet
                 if sample['geo'] is not None \
                         and sample['geo']['type'] is u"Point" \
-                        and sample['place']['country_code'] is "US":
+                        and sample['place']['country_code'] is "US"\
+                        and sample['lang'] is "en":
                     print("yielding")
                     yield sample
 
