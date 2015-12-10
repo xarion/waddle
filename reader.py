@@ -1,8 +1,6 @@
 # coding=utf-8
 import twitter
 
-from helpers import ChunkedStream
-
 
 class TweetReader:
     def __init__(self, twitter_config):
@@ -16,7 +14,7 @@ class TweetReader:
         return self.api.GetStreamSample()
 
     # Training Data
-    @ChunkedStream()
+    # @ChunkedStream()
     def get_sample_stream_with_location(self):  # training data
         stream = self.get_sample_stream()
         for sample in stream:
