@@ -16,18 +16,17 @@ class TweetReader:
     # Training Data
     # @ChunkedStream()
     def get_sample_stream_with_location(self):  # training data
-        stream = self.get_sample_stream()
-        for sample in stream:
-            if 'contributors' in sample:  # this is a tweet
-                if TweetReader.filter(sample):
-                    yield sample
+        for sample in self.get_sample_stream():
+            if TweetReader.filter(sample):
+                yield sample
 
     def get_user_timeline(self, user):
         return self.api.GetUserTimeline(user_id=user["id"], exclude_replies=True, count=40)
 
     @staticmethod
     def filter(sample):
-        return sample['geo'] is not None \
+        return 'contributors' in sample and \
+               sample['geo'] is not None \
                and sample['lang'] == u"en" \
                and sample['geo']['type'] == u"Point" \
                and sample['place']['country_code'] == u"US"
