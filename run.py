@@ -21,6 +21,7 @@ def serialize_timeline_status(timeline_status):
             }
 
 
+print "starting process"
 for status in reader.get_sample_stream_with_location():
     status["timeline"] = map(lambda t: serialize_timeline_status(t), reader.get_user_timeline(status['user']))
     mongodb.write(status)
