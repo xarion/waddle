@@ -27,5 +27,5 @@ class TweetReader:
                     print("yielding")
                     yield sample
 
-    def get_last_tweets_of_user(self, user):
-        return self.api.GetUserTimeline(user)
+    def get_user_timeline(self, user):
+        return self.api.GetUserTimeline(user_id=user["id"], exclude_replies=True, count=40)
