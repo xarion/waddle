@@ -1,9 +1,9 @@
 # coding=utf-8
-from data import MongoDB
-from reader import TweetReader
-from settings import twitter_config, mongod_config
+from data.MongoDB import MongoDB
+from data.TweetReader import TweetReader
+from settings import twitter_config
 
-mongodb = MongoDB(mongod_config)
+mongodb = MongoDB()
 reader = TweetReader(twitter_config)
 
 

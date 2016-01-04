@@ -31,7 +31,7 @@ class Filters:
     @staticmethod
     def get_source_whitelist():
         whitelist = dict()
-        with open("whitelist.txt") as file:
+        with open("config/whitelist.txt") as file:
             for line in file.readlines():
                 whitelist[line] = 1
         return whitelist

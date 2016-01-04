@@ -2,7 +2,7 @@
 import ConfigParser
 
 configParser = ConfigParser.RawConfigParser()
-configParser.read('config')
+configParser.read('config/config.conf')
 
 twitter_config = dict()
 twitter_config['consumer_key'] = configParser.get('twitter', 'consumer_key')

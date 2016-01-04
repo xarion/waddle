@@ -65,7 +65,7 @@ docs/*.out
 .idea/*
 
 # Application Configuration
-config
+config/config.conf
 
 # mongo data dump
 dump
