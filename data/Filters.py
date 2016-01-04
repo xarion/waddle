@@ -1,28 +1,10 @@
-# coding=utf-8
-from pymongo import MongoClient
-
 from helpers import Dictrement
 
 
-class MongoDB:
-    tweets_collection_name = 'tweets'
-
-    def __init__(self, mongodb_config):
-        self.client = MongoClient(mongodb_config['connection_string'])
-        self.db = self.client[mongodb_config['database_name']]
-        self.tweets_collection = self.db[MongoDB.tweets_collection_name]
-
-    def write_stream(self, stream):
-        for batch in stream:
-            self.tweets_collection.insert_many(batch)
-
-    def write(self, document):
-        self.tweets_collection.insert_one(document)
-
-
-class Data:
+class Filters:
     def __init__(self, mongodb):
         self.mongodb = mongodb
+        self.source_whitelist = Filters.get_source_whitelist()
 
     def get_filtered_locations(self):
         docs = self.mongodb.tweets_collection.find({}, {"place.full_name": 1, "_id": 0})
@@ -46,5 +28,19 @@ class Data:
             query.append({"place.full_name": location_name})
         return query
 
-    def get_training_data(self):
-        pass
+    @staticmethod
+    def get_source_whitelist():
+        whitelist = dict()
+        with open("whitelist.txt") as file:
+            for line in file.readlines():
+                whitelist[line] = 1
+        return whitelist
+
+    @staticmethod
+    def filter_timeline(timeline, whitelist):
+        return filter(lambda status: status["source"] in whitelist, timeline)
+
+    def filter_sources(self, docs):
+        for doc in docs:
+            doc["timeline"] = Filters.filter_timeline(doc["timeline"], self.source_whitelist)
+            yield doc

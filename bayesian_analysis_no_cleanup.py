@@ -1,29 +1,17 @@
 from analysis.EmpiricalBayes import EmpiricalBayes
-from data import MongoDB, Data
-from settings import mongod_config
+from data.Data import Data
 
 training_factor = 0.6
 
-mongodb = MongoDB(mongod_config)
-data = Data(mongodb)
-location_filter_query = data.get_location_filter_query()
-
-doc_count = mongodb.tweets_collection.find({"$or": location_filter_query}).count()
-
-training_doc_count = int(doc_count * training_factor)
-
-training_data = mongodb.tweets_collection.find({"$or": location_filter_query}).limit(training_doc_count)
-
+data = Data(training_factor)
 bayes = EmpiricalBayes()
-bayes.train(training_data, training_doc_count)
+bayes.train(data.get_training_data(), data.training_doc_count)
 
-test_data = mongodb.tweets_collection.find({"$or": location_filter_query}).skip(training_doc_count)
-collective_matches = bayes.test_collective(test_data)
+collective_matches = bayes.test_collective(data.get_test_data())
 
-test_data = mongodb.tweets_collection.find({"$or": location_filter_query}).skip(training_doc_count)
-singular_matches = bayes.test_singular(test_data)
+singular_matches = bayes.test_singular(data.get_test_data())
 
-total_tested = doc_count - training_doc_count
+total_tested = data.doc_count - data.training_doc_count
 print "collective matches: %d" % collective_matches
 print "collective precision: %f" % (float(collective_matches) / total_tested)
 
