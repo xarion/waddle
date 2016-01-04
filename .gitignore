@@ -66,3 +66,6 @@ docs/*.out
 
 # Application Configuration
 config
+
+# mongo data dump
+dump
