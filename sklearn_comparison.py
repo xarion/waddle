@@ -185,7 +185,7 @@ def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
         result['precision'] = precision
     except Exception as e:
         print "%s: %s" % (classifier_names[classifier_id], e)
-        result['exception'] = e
+        result['exception'] = str(e)
     result['ended_at'] = datetime.now()
     result['execution_time'] = str(result['ended_at'] - result['started_at'])
     execution.write_execution_result(result)
