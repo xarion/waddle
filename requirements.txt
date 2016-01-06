@@ -1,2 +1,4 @@
+scipy
+sklearn
 python-twitter
 pymongo
