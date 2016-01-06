@@ -3,7 +3,7 @@ import operator
 from data.MongoDB import MongoDB
 from helpers import Dictrement
 
-mongo = MongoDB()
+mongo = MongoDB.db
 
 docs = mongo.tweets_collection.find({}, {"place.full_name": 1, "_id": 0})
 location_counts = Dictrement()
