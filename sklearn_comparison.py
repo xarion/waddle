@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.gaussian_process import GaussianProcess
@@ -10,6 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 from analysis.SKLearn import DataVectorizer, ClassifierExecutor
 from data.Data import Data
+from data.MongoDB import MongoDB
 
 classifiers = [
     LinearRegression(),
@@ -149,6 +152,8 @@ classifier_names = [
     'AdaBoostClassifier(n_estimators=150)',
 ]
 
+mongo = MongoDB()
+
 
 def main(classifier_id=None, training_factor=0.5):
     data = Data(training_factor)
@@ -163,10 +168,17 @@ def main(classifier_id=None, training_factor=0.5):
 
 def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
     executor = ClassifierExecutor(classifiers[classifier_id])
+    result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id, "started_at": datetime.now()}
     try:
-        print "%s: %.4f" % (classifier_names[classifier_id], executor.execute(training_corpus, test_corpus))
+        precision = executor.execute(training_corpus, test_corpus)
+        print "%s: %.4f" % (classifier_names[classifier_id], precision)
+        result['precision'] = precision
     except Exception as e:
         print "%s: %s" % (classifier_names[classifier_id], e)
+        result['exception'] = e
+    result['ended_at'] = datetime.now()
+    result['execution_time'] = result['ended_at'] - result['started_at']
+    mongo.write_execution_result(result)
 
 
 main(1)
