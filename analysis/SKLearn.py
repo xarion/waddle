@@ -1,5 +1,4 @@
 import numpy
-from sklearn import svm
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 import settings
@@ -7,7 +6,7 @@ import settings
 
 class ClassifierExecutor:
     def __init__(self, classifier):
-        self.classifier = svm.SVC(kernel='linear')
+        self.classifier = classifier
 
     def execute(self, training, test):
         self.classifier.fit(training['tfidfs'], training['document_labels'])
