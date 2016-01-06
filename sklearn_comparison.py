@@ -12,8 +12,7 @@ from sklearn.svm import SVC, NuSVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
 import gcloud
-from analysis.SKLearn import DataVectorizer, ClassifierExecutor
-from data.Data import Data
+from analysis.SKLearn import ClassifierExecutor, Corpus
 from data.Execution import Execution
 
 classifiers = [
@@ -158,29 +157,25 @@ classifier_names = [
 
 execution = Execution()
 instance_meta = gcloud.get_metadata()
-training_factor = 0.5
-
+corpus = Corpus()
 
 def main(classifier=None):
-    data = Data(training_factor)
-    vectorizer = DataVectorizer()
-    corpora = vectorizer.convert(data.get_training_data(), data.get_test_data())
     if classifier is None:
         for index in range(0, len(classifiers)):
-            run_classifier_with_id(index, corpora['training'], corpora['test'])
+            run_classifier_with_id(index)
     elif classifier == "all-gcloud":
-        run_after_progress(corpora)
+        run_after_progress()
     else:
-        run_classifier_with_id(int(classifier), corpora['training'], corpora['test'])
+        run_classifier_with_id(int(classifier))
 
 
-def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
+def run_classifier_with_id(classifier_id):
     executor = ClassifierExecutor(classifiers[classifier_id])
     result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
               "started_at": datetime.now(), "meta": instance_meta}
     execution.write_progress(result)
     try:
-        precision = executor.execute(training_corpus, test_corpus)
+        precision = executor.execute(corpus.get_training(), corpus.get_test())
         print "%s: %.4f" % (classifier_names[classifier_id], precision)
         result['precision'] = precision
     except Exception as e:
@@ -191,15 +186,16 @@ def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
     execution.write_execution_result(result)
 
 
-def run_after_progress(corpora):
+def run_after_progress():
     progress = execution.get_last_progress()
     if progress is None:
-        run_classifier_with_id(0, corpora['training'], corpora['test'])
+        run_classifier_with_id(0)
+        return run_after_progress()
     elif progress["classifier_id"] + 1 < len(classifiers):
-        run_classifier_with_id(progress["classifier_id"] + 1, corpora['training'], corpora['test'])
+        run_classifier_with_id(progress["classifier_id"] + 1)
+        return run_after_progress()
     else:
         return 0
-    return run_after_progress(corpora)
 
 
 if __name__ == "__main__":

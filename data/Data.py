@@ -3,7 +3,7 @@ from data.MongoDB import db
 
 
 class Data:
-    def __init__(self, training_factor):
+    def __init__(self, training_factor=0.5):
         self.mongodb = db
         self.filters = Filters(self.mongodb)
         self.location_filter_query = self.filters.get_location_filter_query()
