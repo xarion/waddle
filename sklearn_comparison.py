@@ -157,20 +157,21 @@ classifier_names = [
 mongo = MongoDB()
 
 
-def main(classifier_id=None, training_factor=0.5):
+def main(classifier_id=None, training_factor=0.5, meta=None):
     data = Data(training_factor)
     vectorizer = DataVectorizer()
     corpora = vectorizer.convert(data.get_training_data(), data.get_test_data())
     if classifier_id is None:
         for index in range(0, len(classifiers)):
-            run_classifier_with_id(index, corpora['training'], corpora['test'])
+            run_classifier_with_id(index, corpora['training'], corpora['test'], meta)
     else:
         run_classifier_with_id(classifier_id, corpora['training'], corpora['test'])
 
 
-def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
+def run_classifier_with_id(classifier_id, training_corpus, test_corpus, meta=None):
     executor = ClassifierExecutor(classifiers[classifier_id])
-    result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id, "started_at": datetime.now()}
+    result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
+              "started_at": datetime.now(), "meta": meta}
     try:
         precision = executor.execute(training_corpus, test_corpus)
         print "%s: %.4f" % (classifier_names[classifier_id], precision)
@@ -179,8 +180,5 @@ def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
         print "%s: %s" % (classifier_names[classifier_id], e)
         result['exception'] = e
     result['ended_at'] = datetime.now()
-    result['execution_time'] = result['ended_at'] - result['started_at']
+    result['execution_time'] = str(result['ended_at'] - result['started_at'])
     mongo.write_execution_result(result)
-
-
-main(1)
