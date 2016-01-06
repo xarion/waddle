@@ -16,7 +16,7 @@ class ClassifierExecutor:
 
 
 class DataVectorizer:
-    def __init__(self, ngram_range=(1, 1)):
+    def __init__(self, ngram_range=(1, 2)):
         self.vectorizer = CountVectorizer(min_df=1, ngram_range=ngram_range)
         self.tfidf_transformer = TfidfTransformer()
 
