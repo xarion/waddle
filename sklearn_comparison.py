@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -10,9 +11,10 @@ from sklearn.neighbors import KNeighborsClassifier, RadiusNeighborsClassifier
 from sklearn.svm import SVC, NuSVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
+import gcloud
 from analysis.SKLearn import DataVectorizer, ClassifierExecutor
 from data.Data import Data
-from data.MongoDB import MongoDB
+from data.Execution import Execution
 
 classifiers = [
     LinearRegression(),
@@ -154,24 +156,29 @@ classifier_names = [
     'AdaBoostClassifier(n_estimators=150)',
 ]
 
-mongo = MongoDB()
+execution = Execution()
+instance_meta = gcloud.get_metadata()
+training_factor = 0.5
 
 
-def main(classifier_id=None, training_factor=0.5, meta=None):
+def main(classifier=None):
     data = Data(training_factor)
     vectorizer = DataVectorizer()
     corpora = vectorizer.convert(data.get_training_data(), data.get_test_data())
-    if classifier_id is None:
+    if classifier is None:
         for index in range(0, len(classifiers)):
-            run_classifier_with_id(index, corpora['training'], corpora['test'], meta)
+            run_classifier_with_id(index, corpora['training'], corpora['test'])
+    elif classifier == "all-gcloud":
+        run_after_progress(corpora)
     else:
-        run_classifier_with_id(classifier_id, corpora['training'], corpora['test'])
+        run_classifier_with_id(int(classifier), corpora['training'], corpora['test'])
 
 
-def run_classifier_with_id(classifier_id, training_corpus, test_corpus, meta=None):
+def run_classifier_with_id(classifier_id, training_corpus, test_corpus):
     executor = ClassifierExecutor(classifiers[classifier_id])
     result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
-              "started_at": datetime.now(), "meta": meta}
+              "started_at": datetime.now(), "meta": instance_meta}
+    execution.write_progress(result)
     try:
         precision = executor.execute(training_corpus, test_corpus)
         print "%s: %.4f" % (classifier_names[classifier_id], precision)
@@ -181,4 +188,23 @@ def run_classifier_with_id(classifier_id, training_corpus, test_corpus, meta=Non
         result['exception'] = e
     result['ended_at'] = datetime.now()
     result['execution_time'] = str(result['ended_at'] - result['started_at'])
-    mongo.write_execution_result(result)
+    execution.write_execution_result(result)
+
+
+def run_after_progress(corpora):
+    progress = execution.get_last_progress()
+    if progress is None:
+        run_classifier_with_id(0, corpora['training'], corpora['test'])
+    elif progress["classifier_id"] + 1 < len(classifiers):
+        run_classifier_with_id(progress["classifier_id"] + 1, corpora['training'], corpora['test'])
+    else:
+        return 0
+    return run_after_progress(corpora)
+
+
+if __name__ == "__main__":
+    print sys.argv[1]
+    if len(sys.argv) > 0:
+        main(sys.argv[1])
+    else:
+        main()
