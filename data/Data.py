@@ -1,10 +1,10 @@
 from data.Filters import Filters
-from data.MongoDB import MongoDB
+from data.MongoDB import db
 
 
 class Data:
     def __init__(self, training_factor):
-        self.mongodb = MongoDB()
+        self.mongodb = db
         self.filters = Filters(self.mongodb)
         self.location_filter_query = self.filters.get_location_filter_query()
         self.doc_count = self.mongodb.tweets_collection.find({"$or": self.location_filter_query}).count()

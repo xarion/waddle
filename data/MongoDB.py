@@ -22,3 +22,4 @@ class MongoDB:
 
     def write_execution_result(self, result):
         self.results_collection.insert_one(result)
+db = MongoDB()

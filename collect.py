@@ -3,7 +3,7 @@ from data.MongoDB import MongoDB
 from data.TweetReader import TweetReader
 from settings import twitter_config
 
-mongodb = MongoDB()
+mongodb = MongoDB.db
 reader = TweetReader(twitter_config)
 
 
