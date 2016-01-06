@@ -16,7 +16,7 @@ class Filters:
     def get_source_whitelist():
         whitelist = dict()
         with open("config/whitelist.txt") as file:
-            for line in file.readlines():
+            for line in file.read().splitlines():
                 whitelist[line] = 1
         return whitelist
 
