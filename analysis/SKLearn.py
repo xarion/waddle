@@ -1,7 +1,7 @@
 import numpy
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
-import settings
+from settings import locations
 from data.Data import Data
 
 
@@ -12,7 +12,12 @@ class ClassifierExecutor:
     def execute(self, training, test):
         self.classifier.fit(training['tfidfs'], training['document_labels'])
         predicted = self.classifier.predict(test['tfidfs'])
-        return numpy.mean(predicted == test['document_labels'])
+        result = {"precision": numpy.mean(predicted == test['document_labels']), "predicted": {}, "actual": {}}
+
+        for location in locations.keys():
+            result["predicted"][location] = numpy.count_nonzero(predicted == locations[location])
+            result["actual"][location] = numpy.count_nonzero(test['document_labels'] == locations[location])
+        return result
 
 
 class DataVectorizer:
@@ -35,7 +40,7 @@ class DataVectorizer:
         document_labels = []
         for doc in docs:
             full_name = doc['place']['full_name']
-            document_label_index = settings.locations[full_name]
+            document_label_index = locations[full_name]
             for tweet in doc['timeline']:
                 documents.append(tweet['text'])
                 document_labels.append(document_label_index)
