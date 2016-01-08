@@ -156,14 +156,16 @@ classifier_names = [
 ]
 
 execution = Execution()
-instance_meta = gcloud.get_metadata()
+instance_meta = {}
 corpus = Corpus()
+
 
 def main(classifier=None):
     if classifier is None:
         for index in range(0, len(classifiers)):
             run_classifier_with_id(index)
     elif classifier == "all-gcloud":
+        super.instance_meta = gcloud.get_metadata()
         run_after_progress()
     else:
         run_classifier_with_id(int(classifier))
