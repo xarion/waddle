@@ -199,7 +199,6 @@ def run_after_progress():
 
 
 if __name__ == "__main__":
-    print sys.argv[1]
     if len(sys.argv) > 0:
         main(sys.argv[1])
     else:
