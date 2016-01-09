@@ -75,9 +75,11 @@ classifier_names = [
     'AdaBoostClassifier(n_estimators=170)',
 ]
 
+binary_classification = False
+include_user_history = False
 execution = Execution()
 instance_meta = {}
-corpus = Corpus()
+corpus = Corpus(binary_classification=binary_classification, include_user_history=include_user_history)
 
 
 def main(classifier=None):
@@ -92,17 +94,16 @@ def main(classifier=None):
 
 
 def run_classifier_with_id(classifier_id):
-    executor = ClassifierExecutor(classifiers[classifier_id])
+    executor = ClassifierExecutor(classifiers[classifier_id], binary_classification=binary_classification)
     result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
               "started_at": datetime.now(), "meta": instance_meta}
     execution.write_progress(result)
     try:
-        precision = executor.execute(corpus.get_training(), corpus.get_test())
-        print "%s: %.4f" % (classifier_names[classifier_id], precision)
-        result['precision'] = precision
+        result['result'] = executor.execute(corpus.get_training(), corpus.get_test())
+        print "%s\n%s" % (classifier_names[classifier_id], str(result["result"]))
     except Exception as e:
         print "%s: %s" % (classifier_names[classifier_id], e)
-        result['exception'] = str(e)
+        result['exception'] = str(sys.exc_info())
     result['ended_at'] = datetime.now()
     result['execution_time'] = str(result['ended_at'] - result['started_at'])
     execution.write_execution_result(result)
@@ -121,7 +122,7 @@ def run_after_progress():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         main(sys.argv[1])
     else:
         main()

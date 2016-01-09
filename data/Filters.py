@@ -20,11 +20,10 @@ class Filters:
                 whitelist[line] = 1
         return whitelist
 
-    @staticmethod
-    def filter_timeline(timeline, whitelist):
-        return filter(lambda status: status["source"] in whitelist, timeline)
+    def filter_tweets_by_sources(self, timeline):
+        return filter(lambda status: status["source"] in self.source_whitelist, timeline)
 
-    def filter_sources(self, docs):
+    def filter_history_by_sources(self, docs):
         for doc in docs:
-            doc["timeline"] = Filters.filter_timeline(doc["timeline"], self.source_whitelist)
+            doc["timeline"] = self.filter_tweets_by_sources(doc["timeline"])
             yield doc
