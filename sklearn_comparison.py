@@ -98,12 +98,11 @@ def run_classifier_with_id(classifier_id):
               "started_at": datetime.now(), "meta": instance_meta}
     execution.write_progress(result)
     try:
-        precision = executor.execute(corpus.get_training(), corpus.get_test())
-        print "%s: %.4f" % (classifier_names[classifier_id], precision)
-        result['precision'] = precision
+        result['result'] = executor.execute(corpus.get_training(), corpus.get_test())
+        print "%s\n%s" % (classifier_names[classifier_id], str(result["result"]))
     except Exception as e:
         print "%s: %s" % (classifier_names[classifier_id], e)
-        result['exception'] = str(e)
+        result['exception'] = str(sys.exc_info())
     result['ended_at'] = datetime.now()
     result['execution_time'] = str(result['ended_at'] - result['started_at'])
     execution.write_execution_result(result)
