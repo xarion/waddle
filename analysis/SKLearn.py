@@ -122,6 +122,7 @@ class DataVectorizer:
         else:
             return self.__create_corpus_from_tweets__(docs)
 
+
 class Corpus:
     def __init__(self, binary_classification=False, include_user_history=True):
         self.underlying = None
@@ -132,7 +133,8 @@ class Corpus:
     def get(self):
         if not self.initialized:
             data = Data(include_user_history=self.include_user_history)
-            vectorizer = DataVectorizer(binary_classification=self.binary_classification, include_user_history=self.include_user_history)
+            vectorizer = DataVectorizer(binary_classification=self.binary_classification,
+                                        include_user_history=self.include_user_history)
             self.underlying = vectorizer.convert(data.get_training_data(), data.get_test_data())
             self.initialized = True
         return self.underlying
