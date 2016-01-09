@@ -1,4 +1,5 @@
-import numpy
+import sys
+
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.metrics import precision_recall_fscore_support
 
@@ -28,14 +29,15 @@ class ClassifierExecutor:
 
 
 class DataVectorizer:
-    def __init__(self, ngram_range=(1, 2), binary_classification=False):
+    def __init__(self, ngram_range=(1, 2), binary_classification=False, include_user_history=True):
         self.vectorizer = CountVectorizer(min_df=1, ngram_range=ngram_range)
         self.tfidf_transformer = TfidfTransformer()
         self.binary_classification = binary_classification
+        self.include_user_history = include_user_history
 
     def convert(self, training_docs, test_docs):
-        training_corpus = self.normalise(self.__create_corpus_from_tagged_tweets__(training_docs))
-        test_corpus = self.normalise(self.__create_corpus_from_tagged_tweets__(test_docs))
+        training_corpus = self.normalise(self.__create_corpus__(training_docs))
+        test_corpus = self.normalise(self.__create_corpus__(test_docs))
         print sum(training_corpus["document_labels"])
         print len(training_corpus["document_labels"])
         print sum(test_corpus["document_labels"])
@@ -82,8 +84,8 @@ class DataVectorizer:
                 count += 1
 
         return normalised_docs
-    @staticmethod
-    def __create_corpus__(docs):
+
+    def __create_corpus_from_history__(self, docs):
         documents = []
         document_labels = []
         for doc in docs:
@@ -99,17 +101,38 @@ class DataVectorizer:
                 document_labels.append(document_label_index)
         return {"document_labels": document_labels, "documents": documents}
 
+    def __create_corpus_from_tweets__(self, docs):
+        documents = []
+        document_labels = []
+        for doc in docs:
+            full_name = doc['place']['full_name']
+
+            if self.binary_classification:
+                document_label_index = full_name == "Manhattan, NY"
+            else:
+                document_label_index = locations[full_name]
+
+            documents.append(doc['text'])
+            document_labels.append(document_label_index)
+        return {"document_labels": document_labels, "documents": documents}
+
+    def __create_corpus__(self, docs):
+        if self.include_user_history:
+            return self.__create_corpus_from_history__(docs)
+        else:
+            return self.__create_corpus_from_tweets__(docs)
 
 class Corpus:
-    def __init__(self, binary_classification=False):
+    def __init__(self, binary_classification=False, include_user_history=True):
         self.underlying = None
         self.initialized = False
         self.binary_classification = binary_classification
+        self.include_user_history = include_user_history
 
     def get(self):
         if not self.initialized:
-            data = Data()
-            vectorizer = DataVectorizer(binary_classification=self.binary_classification)
+            data = Data(include_user_history=self.include_user_history)
+            vectorizer = DataVectorizer(binary_classification=self.binary_classification, include_user_history=self.include_user_history)
             self.underlying = vectorizer.convert(data.get_training_data(), data.get_test_data())
             self.initialized = True
         return self.underlying

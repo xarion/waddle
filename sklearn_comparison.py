@@ -76,9 +76,10 @@ classifier_names = [
 ]
 
 binary_classification = False
+include_user_history = False
 execution = Execution()
 instance_meta = {}
-corpus = Corpus(binary_classification=binary_classification)
+corpus = Corpus(binary_classification=binary_classification, include_user_history=include_user_history)
 
 
 def main(classifier=None):
