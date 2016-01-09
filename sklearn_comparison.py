@@ -75,9 +75,10 @@ classifier_names = [
     'AdaBoostClassifier(n_estimators=170)',
 ]
 
+binary_classification = False
 execution = Execution()
 instance_meta = {}
-corpus = Corpus()
+corpus = Corpus(binary_classification=binary_classification)
 
 
 def main(classifier=None):
@@ -92,7 +93,7 @@ def main(classifier=None):
 
 
 def run_classifier_with_id(classifier_id):
-    executor = ClassifierExecutor(classifiers[classifier_id])
+    executor = ClassifierExecutor(classifiers[classifier_id], binary_classification=binary_classification)
     result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
               "started_at": datetime.now(), "meta": instance_meta}
     execution.write_progress(result)

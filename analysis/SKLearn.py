@@ -6,8 +6,9 @@ from data.Data import Data
 
 
 class ClassifierExecutor:
-    def __init__(self, classifier):
+    def __init__(self, classifier, binary_classification=False):
         self.classifier = classifier
+        self.binary_classification = binary_classification
 
     def execute(self, training, test):
         self.classifier.fit(training['tfidfs'], training['document_labels'])
@@ -21,9 +22,10 @@ class ClassifierExecutor:
 
 
 class DataVectorizer:
-    def __init__(self, ngram_range=(1, 2)):
+    def __init__(self, ngram_range=(1, 2), binary_classification=False):
         self.vectorizer = CountVectorizer(min_df=1, ngram_range=ngram_range)
         self.tfidf_transformer = TfidfTransformer()
+        self.binary_classification = binary_classification
 
     def convert(self, training_docs, test_docs):
         training_corpus = self.__create_corpus__(training_docs)
@@ -40,7 +42,12 @@ class DataVectorizer:
         document_labels = []
         for doc in docs:
             full_name = doc['place']['full_name']
-            document_label_index = locations[full_name]
+
+            if self.binary_classification:
+                document_label_index = full_name == "Manhattan, NY"
+            else:
+                document_label_index = locations[full_name]
+
             for tweet in doc['timeline']:
                 documents.append(tweet['text'])
                 document_labels.append(document_label_index)
@@ -48,14 +55,15 @@ class DataVectorizer:
 
 
 class Corpus:
-    def __init__(self):
+    def __init__(self, binary_classification=False):
         self.underlying = None
         self.initialized = False
+        self.binary_classification = binary_classification
 
     def get(self):
         if not self.initialized:
             data = Data()
-            vectorizer = DataVectorizer()
+            vectorizer = DataVectorizer(binary_classification=self.binary_classification)
             self.underlying = vectorizer.convert(data.get_training_data(), data.get_test_data())
             self.initialized = True
         return self.underlying
