@@ -69,3 +69,8 @@ config/config.conf
 
 # mongo data dump
 dump
+
+#tex
+*.bbl
+*.blg
+*.synctex.gz

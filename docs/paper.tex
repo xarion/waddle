@@ -1,0 +1,161 @@
+\documentclass[twoside,11pt]{article}
+
+% !!!!! As a rule, use past tense to describe events that have happened. Such events include procedures that you have conducted and results that you observed. Use present tense to describe generally accepted facts. !!!!!
+
+% Any additional packages needed should be included after jmlr2e.
+% Note that jmlr2e.sty includes epsfig, amssymb, natbib and graphicx,
+% and defines many common macros, such as 'proof' and 'example'.
+%
+% It also sets the bibliographystyle to plainnat; for more information on
+% natbib citation styles, see the natbib documentation, a copy of which
+% is archived at http://www.jmlr.org/format/natbib.pdf
+
+\usepackage{jmlr2e}
+\usepackage{amssymb} %maths
+\usepackage{amsmath} %maths
+% Definitions of handy macros can go here
+
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+
+% Heading arguments are {volume}{year}{pages}{submitted}{published}{author-full-names}
+
+% \jmlrheading{1}{2000}{1-48}{4/00}{10/00}{Marina Meil\u{a} and Michael I. Jordan}
+
+% Short headings should be running head and authors last names
+
+\ShortHeadings{Location Classification on Tweets}{Erdi \c{C}all{\i}}
+\firstpageno{1}
+
+\begin{document}
+
+\title{Location Classification on Tweets}
+\author{\name Erdi \c{C}all{\i} \\ \email erdicalli@gmail.com \\ s4600673}
+
+\maketitle
+
+\begin{abstract}%
+this is the last thing.
+\end{abstract}
+
+\begin{keywords}
+Supervised Learning, Classification, Twitter, Geolocation
+\end{keywords}
+
+
+\section{Introduction}
+
+Proliferation of microblogging platforms, such as Twitter, enabled companies to learn valuable information about their products, customers and businesses. Twitter, introduced the option to include location information on tweets(geotagging) in 2009\footnote{https://blog.twitter.com/2009/location-location-location}. Since then, many applications(i.e Foursquare) and users started embedding this information to enrich the tweet content. But this information is not always shared by users. Using geotagged tweets to train classification algorithms, it may be possible to infer tweet locations. 
+
+Using sentimental analysis\footnote{Twitter as a Corpus for Sentiment Analysis and Opinion Mining. A Pak, P Paroubek - LREC, 2010}, a company can learn if its customers are happy with their products or a political figure can get feedback from his/her voters. The possibilities are endless. Incorporating this information with geolocation may be valuable in lots of situations for politicians, businesses and other parties.
+
+% TODO: REWRITE THIS PART AFTER CHECKING OTHER RESEARCH!
+This problem is first researched in a paper called \textit{You are where you tweet: a content-based approach to geo-locating twitter users}\footnote{http://dl.acm.org/citation.cfm?id=1871535}. Then improved with different studies such as \textit{Broadly Improving User Classification via
+Communication-Based Name and Location Clustering on Twitter}\footnote{http://www.aclweb.org/old\_anthology/N/N13/N13-1121.pdf}. These studies got accuracy up to 55 percent, not only using the tweet text, but also introducing other factors such as user behaviour.
+
+% TODO: check your highest recall rate
+Comparing different Machine Learning algorithms implemented in Scikit Learn\footnote{http://scikit-learn.org/}, we have tried to find the best algorithm to approach this problem. Introducing different configurations and optimisations, we have achieved a recall rate up to 60\% in binary classification. 
+
+
+\section{Related Work}
+
+
+\section{Data Collection and Analysis}
+Using Twitter's sample status streaming api\footnote{https://dev.twitter.com/streaming/reference/get/statuses/sample}, we have collected data. This api returns approximately 1\% of the public tweets from all around the world. We have filtered this data to reduce the problem space to only location classification. Our filter selects only the geotagged English tweets, sent within the United States. Running this collector for 1 month, we have collected a dataset consisting of 33112 individual tweets, each from a unique user. We have also collected a sample of 40 tweets from those users, if their timelines are public, to enrich the dataset. 
+
+Upon investigating this dataset, we have realised that there are a lot of low quality, automated tweets, coming from 886 different tweet sources(devices or applications that a tweet has been sent from). To remove these sources, we have created a whitelist of most used 20 sources that selects applications which real users use to tweet from. This reduced the amount of data by around 50\%, to 17040 individual geotagged tweets. 
+
+Investigating the locations the tweets has been sent, we have seen that there are 3306 different locations(location full name in this case) that tweets have been geotagged with.
+
+One problem with the locations is the granularity. A location can appear as a state(New York, US), a city(New York, NY) or a neighbourhood(Manhattan, NY). A selection of 8 top locations, not intersecting each other, is selected from the ones containing the most tweets.
+% TODO: add some figure here, table or histogram of location counts
+
+\section{Experiments}
+% TODO: bag of words reference
+
+\subsection{Empirical Bayes}
+% TODO empirical prior reference
+% TODO twokenize footnote
+In this experiment we have tokenised each tweet using the $twokenize$ module, to convert them to a $bag\ of\ words$, calculate the probability of each "token given location" and probability of each location to find the maximum probability among locations.
+\begin{equation*}
+\begin{split}
+\mathbf{T} &= Tokens \\
+L &= Location \\
+p(L|\mathbf{T}) &= \frac{p(\mathbf{T} | L)p(L)}{p(T)}
+\end{split}
+\end{equation*}
+With likelihood $p(\mathbf{T} | L)$ and prior $p(\mathbf{L})$. For the prior, instead of assuming a distribution, we have generated an empirical prior and applied MAP estimate to the posterior;
+\begin{equation*}
+\hat{L} = \arg\max_L\{p(\mathbf{T} | L) P(L)\}
+\end{equation*}
+where;
+\begin{equation*}
+\begin{split}
+p(\mathbf{T} | L) &= \prod_i{p(t_i|L)}\\
+\end{split}
+\end{equation*}
+Empirical prior $p(L)$ is referring to the probability of a location L in the training data.
+
+This experiment have been tested for 2 different configurations. In the first configuration, the collection of sample tweets and geotagged tweet belonging to an individual user are accepted as one document, assuming the same location as geotagged tweet. In the second configuration, each sample tweet of an individual are accepted as separate documents with same assumption.
+
+The problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, tweets containing this token gots a probability of 0. To avoid this problem we have ignored those tokens in the MAP estimate.
+
+%TODO: include results
+\subsection{Scikit Learn}
+This experiment compares the classification methods implemented in Scikit Learn(sklearn)(v0.17) library with different configurations. 
+
+
+% Acknowledgements should go at the end, before appendices and references
+
+% \acks{We would like to acknowledge support for this project
+% from the National Science Foundation (NSF grant IIS-9988642)
+% and the Multidisciplinary Research Program of the Department
+% of Defense (MURI N00014-00-1-0637). }
+
+% Manual newpage inserted to improve layout of sample file - not
+% needed in general before appendices/bibliography.
+
+\newpage
+
+\appendix
+\section*{Appendix A.}
+\label{app:theorem}
+
+% Note: in this sample, the section number is hard-coded in. Following
+% proper LaTeX conventions, it should properly be coded as a reference:
+
+%In this appendix we prove the following theorem from
+%Section~\ref{sec:textree-generalization}:
+
+In this appendix we prove the following theorem from
+Section~6.2:
+
+\noindent
+{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
+not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
+dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
+which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
+respective empirical mutual information values based on the sample
+$\dataset$. Then
+\[
+	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
+\]
+with equality only if $u$ is identically 0.} \hfill\BlackBox
+
+\noindent
+{\bf Proof}. We use the notation:
+\[
+P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
+P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
+\]
+These values represent the (empirical) probabilities of $v$
+taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
+by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
+
+{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
+
+
+\vskip 0.2in
+\bibliography{sample}
+
+\end{document}

@@ -6,7 +6,7 @@ class Data:
     def __init__(self, training_factor=0.5, include_user_history=True):
         self.mongodb = db
         self.training_factor = training_factor
-        self.filters = Filters(self.mongodb)
+        self.filters = Filters()
         self.location_filter_query = self.filters.get_location_filter_query()
         self.doc_count = self.__get_cursor__().count()
         self.training_doc_count = int(self.doc_count * self.training_factor)

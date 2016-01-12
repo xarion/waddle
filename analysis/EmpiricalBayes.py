@@ -62,9 +62,9 @@ class EmpiricalBayes:
             for loc in self.location_counts.keys():
                 location_posterior = self.get_location_count(loc) / self.training_data_count
                 for token in tokens:
-                    token_count = self.get_location_token_count(loc, token)
-                    if token_count is not None:
-                        location_posterior *= token_count / self.get_location_token_total_count(loc)
+                    location_token_count = self.get_location_token_count(loc, token)
+                    if location_token_count is not None:
+                        location_posterior *= location_token_count / self.get_location_token_total_count(loc)
                 if max_val is None or location_posterior > max_val:
                     max_val = location_posterior
                     result = loc
