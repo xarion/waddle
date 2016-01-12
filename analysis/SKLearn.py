@@ -39,10 +39,6 @@ class DataVectorizer:
     def convert(self, training_docs, test_docs):
         training_corpus = self.normalise(self.__create_corpus__(training_docs))
         test_corpus = self.normalise(self.__create_corpus__(test_docs))
-        print sum(training_corpus["document_labels"])
-        print len(training_corpus["document_labels"])
-        print sum(test_corpus["document_labels"])
-        print len(test_corpus["document_labels"])
         training_corpus['tfidfs'] = self.tfidf_transformer.fit_transform(
                 self.vectorizer.fit_transform(training_corpus['documents']))
         test_corpus['tfidfs'] = self.tfidf_transformer.transform(self.vectorizer.transform(test_corpus['documents']))
