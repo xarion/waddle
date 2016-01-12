@@ -76,13 +76,11 @@ configurations = [
     (True, True, 2),
 ]
 
-execution = Execution()
-instance_meta = {}
-
 
 class Main:
     def __init__(self):
         self.instance_meta = {}
+        self.execution = Execution()
 
     @staticmethod
     def create_corpus(configuration):
@@ -105,8 +103,8 @@ class Main:
         result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
                   "configuration_id": configuration_id, "binary_classification": configuration[0],
                   "include_user_history": configuration[1], "ngram": configuration[2], "started_at": datetime.now(),
-                  "meta": instance_meta}
-        execution.write_progress(result)
+                  "meta": self.instance_meta}
+        self.execution.write_progress(result)
         corpus = self.create_corpus(configuration)
         executor = ClassifierExecutor(classifiers[classifier_id], binary_classification=configuration[0])
         try:
@@ -117,10 +115,10 @@ class Main:
             result['exception'] = str(sys.exc_info())
         result['ended_at'] = datetime.now()
         result['execution_time'] = str(result['ended_at'] - result['started_at'])
-        execution.write_execution_result(result)
+        self.execution.write_execution_result(result)
 
     def run_after_progress(self):
-        progress = execution.get_last_progress()
+        progress = self.execution.get_last_progress()
         if progress is None:
             self.run_classifier_with_id(0, 0)
             return self.run_after_progress()
