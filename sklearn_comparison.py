@@ -77,9 +77,10 @@ classifier_names = [
 
 binary_classification = False
 include_user_history = False
+ngram = 2
 execution = Execution()
 instance_meta = {}
-corpus = Corpus(binary_classification=binary_classification, include_user_history=include_user_history)
+corpus = Corpus(ngram=ngram, binary_classification=binary_classification, include_user_history=include_user_history)
 
 
 def main(classifier=None):
@@ -97,6 +98,7 @@ def run_classifier_with_id(classifier_id):
     executor = ClassifierExecutor(classifiers[classifier_id], binary_classification=binary_classification)
     result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
               "binary_classification": binary_classification, "include_user_history": include_user_history,
+              "ngram": ngram,
               "started_at": datetime.now(), "meta": instance_meta}
     execution.write_progress(result)
     try:

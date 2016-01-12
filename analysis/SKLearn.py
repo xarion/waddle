@@ -29,7 +29,8 @@ class ClassifierExecutor:
 
 
 class DataVectorizer:
-    def __init__(self, ngram_range=(1, 2), binary_classification=False, include_user_history=True):
+    def __init__(self, ngram=2, binary_classification=False, include_user_history=True):
+        ngram_range = (1, ngram)
         self.vectorizer = CountVectorizer(min_df=1, ngram_range=ngram_range)
         self.tfidf_transformer = TfidfTransformer()
         self.binary_classification = binary_classification
@@ -124,17 +125,19 @@ class DataVectorizer:
 
 
 class Corpus:
-    def __init__(self, binary_classification=False, include_user_history=True):
+    def __init__(self, binary_classification=False, include_user_history=True, ngram=2):
         self.underlying = None
         self.initialized = False
         self.binary_classification = binary_classification
         self.include_user_history = include_user_history
+        self.ngram = ngram
 
     def get(self):
         if not self.initialized:
             data = Data(include_user_history=self.include_user_history)
             vectorizer = DataVectorizer(binary_classification=self.binary_classification,
-                                        include_user_history=self.include_user_history)
+                                        include_user_history=self.include_user_history,
+                                        ngram=self.ngram)
             self.underlying = vectorizer.convert(data.get_training_data(), data.get_test_data())
             self.initialized = True
         return self.underlying
