@@ -12,4 +12,5 @@ class Execution:
         self.mongodb.progress_collection.insert_one(progress)
 
     def get_last_progress(self):
-        return self.mongodb.progress_collection.find_one({"$query": {}, "$orderby": {"classifier_id": -1}})
+        return self.mongodb.progress_collection.find_one(
+                {"$query": {}, "$orderby": {"classifier_id": -1, "configuration_id": -1}})
