@@ -96,6 +96,7 @@ def main(classifier=None):
 def run_classifier_with_id(classifier_id):
     executor = ClassifierExecutor(classifiers[classifier_id], binary_classification=binary_classification)
     result = {"classifier": classifier_names[classifier_id], "classifier_id": classifier_id,
+              "binary_classification": binary_classification, "include_user_history": include_user_history,
               "started_at": datetime.now(), "meta": instance_meta}
     execution.write_progress(result)
     try:
