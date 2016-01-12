@@ -1,5 +1,7 @@
+import random
 import sys
 from datetime import datetime
+from time import sleep
 
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.linear_model import LogisticRegressionCV, SGDClassifier, Perceptron, PassiveAggressiveClassifier
@@ -92,6 +94,7 @@ class Main:
             for index in range(0, len(classifiers)):
                 self.run_classifier_with_id(index, configuration_id)
         elif classifier == "all-gcloud":
+            sleep(random.random() * 10)  # instead of locking tables, this is much easier to avoid collusion
             self.instance_meta = gcloud.get_metadata()
             self.run_after_progress()
         else:
