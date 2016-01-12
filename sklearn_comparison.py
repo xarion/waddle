@@ -92,7 +92,7 @@ class Main:
             for index in range(0, len(classifiers)):
                 self.run_classifier_with_id(index, configuration_id)
         elif classifier == "all-gcloud":
-            # self.instance_meta = gcloud.get_metadata()
+            self.instance_meta = gcloud.get_metadata()
             self.run_after_progress()
         else:
             self.run_classifier_with_id(int(classifier), configuration_id)
