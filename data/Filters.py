@@ -1,9 +1,10 @@
 import settings
+from data.MongoDB import db
 
 
 class Filters:
-    def __init__(self, mongodb):
-        self.mongodb = mongodb
+    def __init__(self):
+        self.mongodb = db
         self.source_whitelist = Filters.get_source_whitelist()
 
     def get_location_filter_query(self):
