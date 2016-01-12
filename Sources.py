@@ -1,11 +1,10 @@
 ## count tweet sources
 import operator
 
-from data import MongoDB
+from data.MongoDB import db
 from helpers import Dictrement
-from settings import mongod_config
 
-mongodb = MongoDB(mongod_config)
+mongodb = db
 docs = mongodb.tweets_collection.find()
 source_dictrement = Dictrement()
 count = 0
