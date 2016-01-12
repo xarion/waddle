@@ -14,10 +14,6 @@ from analysis.SKLearn import ClassifierExecutor, Corpus
 from data.Execution import Execution
 
 classifiers = [
-    LinearRegression(),
-    RidgeCV(alphas=[.1, .5, 1, 5, 10]),
-    LassoCV(),
-    ElasticNetCV(),
     LogisticRegressionCV(),
     SGDClassifier(loss="hinge"),
     SGDClassifier(loss="log"),
@@ -36,8 +32,6 @@ classifiers = [
     LinearSVC(),
     KNeighborsClassifier(n_neighbors=8, weights="uniform"),
     KNeighborsClassifier(n_neighbors=8, weights="distance"),
-    RadiusNeighborsClassifier(weights="uniform"),
-    RadiusNeighborsClassifier(weights="distance"),
     MultinomialNB(),
     BernoulliNB(),
     DecisionTreeClassifier(),
@@ -45,10 +39,6 @@ classifiers = [
 ]
 
 classifier_names = [
-    'LinearRegression()',
-    'RidgeCV(alphas=[.1, .5, 1, 5, 10])',
-    'LassoCV()',
-    'ElasticNetCV()',
     'LogisticRegressionCV()',
     'SGDClassifier(loss="hinge")',
     'SGDClassifier(loss="log")',
@@ -67,8 +57,6 @@ classifier_names = [
     'LinearSVC()',
     'KNeighborsClassifier(n_neighbors=8, weights="uniform")',
     'KNeighborsClassifier(n_neighbors=8, weights="distance")',
-    'RadiusNeighborsClassifier(weights="uniform")',
-    'RadiusNeighborsClassifier(weights="distance")',
     'MultinomialNB()',
     'BernoulliNB()',
     'DecisionTreeClassifier()',
