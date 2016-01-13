@@ -96,7 +96,7 @@ class Main:
             self.instance_meta = gcloud.get_metadata()
             self.run_after_progress()
         else:
-            self.run_classifier_with_id(int(classifier), configuration_id)
+            self.run_classifier_with_id(int(classifier), int(configuration_id))
 
     def run_classifier_with_id(self, classifier_id, configuration_id):
         configuration = configurations[configuration_id]
