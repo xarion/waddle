@@ -13,16 +13,12 @@
 \usepackage{jmlr2e}
 \usepackage{amssymb} %maths
 \usepackage{amsmath} %maths
-% Definitions of handy macros can go here
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{url}
 
 \newcommand{\dataset}{{\cal D}}
 \newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
-
-% Heading arguments are {volume}{year}{pages}{submitted}{published}{author-full-names}
-
-% \jmlrheading{1}{2000}{1-48}{4/00}{10/00}{Marina Meil\u{a} and Michael I. Jordan}
-
-% Short headings should be running head and authors last names
 
 \ShortHeadings{Location Classification on Tweets}{Erdi \c{C}all{\i}}
 \firstpageno{1}
@@ -30,53 +26,52 @@
 \begin{document}
 
 \title{Location Classification on Tweets}
-\author{\name Erdi \c{C}all{\i} \\ \email erdicalli@gmail.com \\ s4600673}
-
+\author{\name Erdi \c{C}all{\i}  \email e.calli@student.ru.nl}
 \maketitle
-
-\begin{abstract}%
-this is the last thing.
+\begin{abstract}
+Previous research on Twitter user location classification is mostly focusing on multi-class prediction. Approaching at the same problem from another perspective, in some cases, it may be enough to answer if someone belongs to a location or not. In this perspective, we have compared some models for predicting tweet locations using Binary and Multi-Class Classification. We have seen that if the problem at hand is reducible to Binary Classification, it is possible to make much better predictions.
 \end{abstract}
-
-\begin{keywords}
-Supervised Learning, Classification, Twitter, Geolocation
-\end{keywords}
 
 
 \section{Introduction}
 
-Proliferation of microblogging platforms, such as Twitter, enabled companies to learn valuable information about their products, customers and businesses. Twitter, introduced the option to include location information on tweets(geotagging) in 2009\footnote{https://blog.twitter.com/2009/location-location-location}. Since then, many applications(i.e Foursquare) and users started embedding this information to enrich the tweet content. But this information is not always shared by users. Using geotagged tweets to train classification algorithms, it may be possible to infer tweet locations. 
+Proliferation of microblogging platforms, such as Twitter, enabled companies to learn valuable information about their products, customers and businesses. Twitter, introduced the option to include location information on tweets(geotagging) in 2009\footnote{\url{https://blog.twitter.com/2009/location-location-location}}. Since then, many applications(i.e Foursquare) and users started embedding this information to enrich the tweet content. Using geotagged tweets to train classification algorithms, it is proven to be possible to infer tweet locations\cite{cheng2010you}.
 
-Using sentimental analysis\footnote{Twitter as a Corpus for Sentiment Analysis and Opinion Mining. A Pak, P Paroubek - LREC, 2010}, a company can learn if its customers are happy with their products or a political figure can get feedback from his/her voters. The possibilities are endless. Incorporating this information with geolocation may be valuable in lots of situations for politicians, businesses and other parties.
+Using sentimental analysis\cite{pak2010twitter}, a company can learn if its customers are happy with their products or a political figure can get feedback from his/her voters. The possibilities are endless. Incorporating this information with geolocation may be valuable in lots of situations for politicians, businesses and other parties.
 
-% TODO: REWRITE THIS PART AFTER CHECKING OTHER RESEARCH!
-This problem is first researched in a paper called \textit{You are where you tweet: a content-based approach to geo-locating twitter users}\footnote{http://dl.acm.org/citation.cfm?id=1871535}. Then improved with different studies such as \textit{Broadly Improving User Classification via
-Communication-Based Name and Location Clustering on Twitter}\footnote{http://www.aclweb.org/old\_anthology/N/N13/N13-1121.pdf}. These studies got accuracy up to 55 percent, not only using the tweet text, but also introducing other factors such as user behaviour.
+Unfortunately geolocation is not shared in most of the tweets and most of the tweets tagged with location are sent from apps or bots. Also geotags are containing different granularities such as city, neighbourhood or state. Because of those problems most of the data supplied by twitter is filtered out.
 
-% TODO: check your highest recall rate
-Comparing different Machine Learning algorithms implemented in Scikit Learn\footnote{http://scikit-learn.org/}, we have tried to find the best algorithm to approach this problem. Introducing different configurations and optimisations, we have achieved a recall rate up to 60\% in binary classification. 
+In previous studies, this problem has been solved up to a precision as a multi-class classification problem with different algorithms and assumptions. We are introducing binary classification to find the tweets belonging to a specific location.
 
+In this study, different Supervised Learning methods implemented in Scikit Learn\cite{scikit-learn} are tested with different configurations. We have also introduced binary classification on location prediction.\footnote{Source code available at \url{http://www.github.com/xarion/waddle}}
 
 \section{Related Work}
 
+Using text mining methods and location tags in tweets, \cite{cheng2010you} redefined this problem. \cite{cheng2010you} used only the text data and introduced a method that identifies the words with strong local geo-scope. This study achieved up to 51\% accuracy to locate users within a 100 mile radius. 
 
-\section{Data Collection and Analysis}
+\cite{hecht2011tweets} introduced the $CALGARI$ classifying algorithm specific to this problem, focusing on country and state prediction. They got a 72\% accuracy for classifying 4 countries and 30\% accuracy on classifying 18 states. 
+
+\cite{eisenstein2010latent} created a geographic topic model to make use of the textual differences in topics based on regions, they got a median distance error of 494 kms. 
+
+\cite{wing2011simple} tried to solve this problem using geotagged Wikipedia articles and tweet texts, focusing on predicting the geolocation. Their work has obtained a median error of 479 km's for tweets. 
+
+\cite{mahmud2012tweet} introduced hierarchical classification methods combined with statistical methods. They have achieved 58\%, 66\% and 78\% accuracy on city, state and timezone levels, respectively. Also their findings show that users may be able to partially hide their locations, making their tweets untraceable. Same researchers revisited the problem in \cite{mahmud2014home}, trying to classify the home location of users, achieving similar results and also introducing movement and location prediction. 
+
+\cite{sadilek2012finding} approached this problem introducing the friend information, constructing a friend location graph. Their study was able to achieve 77\% to 84.3\% accuracy, relative to available number of friends.
+
+\cite{graham2014world} studied the problems with the baselines accepted by recent studies and explained why location and language classification is not an easy problem and how some of the assumptions are incorrect, such as accepting the device location as user's location. 
+
+\section{Method}
+\subsection{Data Collection}
 Using Twitter's sample status streaming api\footnote{https://dev.twitter.com/streaming/reference/get/statuses/sample}, we have collected data. This api returns approximately 1\% of the public tweets from all around the world. We have filtered this data to reduce the problem space to only location classification. Our filter selects only the geotagged English tweets, sent within the United States. Running this collector for 1 month, we have collected a dataset consisting of 33112 individual tweets, each from a unique user. We have also collected a sample of 40 tweets from those users, if their timelines are public, to enrich the dataset. 
 
 Upon investigating this dataset, we have realised that there are a lot of low quality, automated tweets, coming from 886 different tweet sources(devices or applications that a tweet has been sent from). To remove these sources, we have created a whitelist of most used 20 sources that selects applications which real users use to tweet from. This reduced the amount of data by around 50\%, to 17040 individual geotagged tweets. 
 
-Investigating the locations the tweets has been sent, we have seen that there are 3306 different locations(location full name in this case) that tweets have been geotagged with.
-
 One problem with the locations is the granularity. A location can appear as a state(New York, US), a city(New York, NY) or a neighbourhood(Manhattan, NY). A selection of 8 top locations, not intersecting each other, is selected from the ones containing the most tweets.
-% TODO: add some figure here, table or histogram of location counts
-
-\section{Experiments}
-% TODO: bag of words reference
 
 \subsection{Empirical Bayes}
-% TODO empirical prior reference
 % TODO twokenize footnote
-In this experiment we have tokenised each tweet using the $twokenize$ module, to convert them to a $bag\ of\ words$, calculate the probability of each "token given location" and probability of each location to find the maximum probability among locations.
+To better understand the data, we have created a posterior with empirical prior\cite{carlin1997bayes} and used MAP estimation\cite{degrooth} to find the best classification result. Tokenised each tweet using the $twokenize$ module\cite{gimpel2011part}, to convert them to a $bag\ of\ words$, calculate the probability of each "token given location" and the probability of each location to find their probabilities. 
 \begin{equation*}
 \begin{split}
 \mathbf{T} &= Tokens \\
@@ -84,7 +79,9 @@ L &= Location \\
 p(L|\mathbf{T}) &= \frac{p(\mathbf{T} | L)p(L)}{p(T)}
 \end{split}
 \end{equation*}
-With likelihood $p(\mathbf{T} | L)$ and prior $p(\mathbf{L})$. For the prior, instead of assuming a distribution, we have generated an empirical prior and applied MAP estimate to the posterior;
+With likelihood $p(\mathbf{T} | L)$ and prior $p(\mathbf{L})$. 
+
+For the prior, instead of assuming a distribution, we have generated an empirical prior and applied MAP estimate to the posterior;
 \begin{equation*}
 \hat{L} = \arg\max_L\{p(\mathbf{T} | L) P(L)\}
 \end{equation*}
@@ -96,66 +93,156 @@ p(\mathbf{T} | L) &= \prod_i{p(t_i|L)}\\
 \end{equation*}
 Empirical prior $p(L)$ is referring to the probability of a location L in the training data.
 
-This experiment have been tested for 2 different configurations. In the first configuration, the collection of sample tweets and geotagged tweet belonging to an individual user are accepted as one document, assuming the same location as geotagged tweet. In the second configuration, each sample tweet of an individual are accepted as separate documents with same assumption.
+This experiment have been tested for 2 different configurations. In the first configuration, the collection of sample tweets from a user and the geotagged tweet belonging to same user are accepted as one document, assuming the location of the geotagged tweet. In the second configuration, each sample tweet of an individual are accepted as separate documents with same assumption. 
 
-The problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, tweets containing this token gots a probability of 0. To avoid this problem we have ignored those tokens in the MAP estimate.
+\subsubsection{Implementation}
+First run of the experiment with the whole dataset resulted with 0.02 and 0.04 accuracy rates for the first and second configurations, respectively. After this experiment, we have seen that the assumption on the second configuration is better than the first one. The rest of this experiment is ran with the second configuration.
 
-%TODO: include results
-\subsection{Scikit Learn}
-This experiment compares the classification methods implemented in Scikit Learn(sklearn)(v0.17) library with different configurations. 
+One problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, tweets containing this token got a probability of 0. To solve this problem, we have ignored those tokens. Second run of this classifier resulted with an accuracy rate of 0.05.
+
+\subsubsection{Source Filtering}
+Upon investigating the dataset, we have realised that there are a lot of low quality, automated tweets, coming from 886 different tweet sources(devices or applications that a tweet has been sent from). To remove these sources, we have created a whitelist of most used 20 sources that selects applications which real users use to tweet from. This reduced the amount of data by around half, to 17040 individual geotagged tweets. Third run of the experiment for those 20 sources improved the accuracy to 0.09. 
+
+\subsubsection{Location Filtering}
+Investigating the locations the tweets has been sent, we have seen that there are 3306 different locations(location full name in this case) that tweets have been geotagged with. Most of them having only 1 tweet. We have created another whitelist for locations, only including the top 10. This has reduced the dataset to 4751 individual geotagged tweets. Taking a closer look to those 10 locations, we have seen that there are 1 neighbourhood, 2 states and 7 cities. To have finer class definitions, we have removed those 2 states from location whitelist. Running the experiment for the last time, we have acquired an accuracy of 0.11. Which doesn't seem better than making random classifications for 8 locations.
+
+\subsection{Scikit Learn - Multinomial Naive Bayes}
+This experiment uses the Multinomial Naive Bayes model to predict classes. This model captures information on documents as an ordered sequence of tokens\cite{mccallum1998comparison}, using a Multinomial Distribution. We have used the method implemented in Scikit Learn\cite{scikit-learn}(sklearn, v0.17).
+
+Also, in this experiment, we have redefined the data configurations. For the first data configuration, all tweets of a user are tagged with the original tweet's geotag location.  For the second configuration, we have ignored the user history and only used the geotagged tweets.
+
+These implementations also had a different structure. Instead of token counts used in the first experiment, we have used tf-idf scores. Also sparse matrix implementation of Numpy is used to represent those frequencies by default. We have stopped using the $twokenize$ module and switched to the internal tokenizer of sklearn.
+
+\subsubsection{Multinomial Naive Bayes}
+
+For this experiment, MultinomialNB(Multinomial Naive Bayes) implementation is selected. This implementation has achieved a higher macro accuracy results of 0.19, 0.24 for first and second configurations, respectively. But when we investigated the micro accuracy we have seen that the classifier almost always predicted the location with highest amount of tweets.
+
+\subsubsection{Normalisation of Documents per Class}
+To prevent the problem in the last experiment, we have normalised the dataset by accepting equal amount of documents per class. Upon normalising the number of documents per class, we have achieved accuracy rates of 0.29, 0.42 for first and second data configurations.
+
+\subsubsection{Ngrams}
+To improve the results found in the last experiment, we have tried Ngrams in range (1,2). It did not result with an improvement in accuracy. The accuracy has decreased by 0.003 for both configurations.
+
+\subsubsection{Binary Classification}
+To be able to answer the question, which tweets are from given a location, we have changed our multi-class classification problem to a binary classification problem. Running tests to classify tweets from $Manhattan,\ NY$ by including previous improvements and ngrams in range (1,2) we have achieved accuracy rates of 0.71, 0.62 for first and second data configurations, respectively. 
+
+\subsection{Scikit Learn - Algorithm Comparison}
+This experiment compares the classification methods implemented in Scikit Learn(sklearn)(v0.17) library with different configurations. Sklearn implements various classification methods such as, Logistic Regression, Perceptron, Support Vector Classifiers and etc. We have compared the sklearn methods under supervised learning\footnote{http://scikit-learn.org/stable/supervised\_learning.html}, applicable to classification and able to work with sparse matrices. We have also tried various parameters for those algorithms. Resulting set of algorithms and parameters was containing 22 combinations.
+
+\begin{enumerate}
+\scriptsize
+
+\item LogisticRegressionCV: a linear model for classification. Uses a logistic function to calculate the class probabilities are of a single trial. This version uses cross validation to find optimal values for parameters.
+\item SGDClassifier: Stochastic Gradient Descent learning model supporting multiple loss functions and penalties. 
+\begin{enumerate}
+\item SGDClassifier(loss="hinge"): Hinge is a commonly used convex loss function for classification.
+\item SGDClassifier(loss="log"): Converts SGD to a probabilistic logistic regression classifier.
+\item SGDClassifier(loss="modified\_huber"): Hinge with a setting, $\gamma=2$
+\item SGDClassifier(loss="squared\_hinge"): Quadratically penalised hinge.
+\item SGDClassifier(loss="perceptron"): Linear loss function used with the Perceptron algorithm.
+\item SGDClassifier(loss="squared\_loss"): Least squares loss function.
+\item SGDClassifier(loss="huber"): Similar to squared\_loss but switches from squared to linear after a threshold.
+\item SGDClassifier(loss="epsilon\_insensitive"): Linear loss function, ignoring errors less than the threshold, epsilon.
+\item SGDClassifier(loss="squared\_epsilon\_insensitive"): Squared version of epsilon\_insensitive.
+\end{enumerate}
+\item Perceptron: Same as SGDClassifier(loss="perceptron") with a constant learning rate and different default parameters.
+\item PassiveAggressiveClassifier: Similar to Perceptron. Instead of using a learning rate, uses a regularisation term.
+\begin{enumerate}
+\item PassiveAggressiveClassifier(loss="hinge")
+\item PassiveAggressiveClassifier(loss="squared\_hinge")
+\end{enumerate}
+\item SVC: Classifier model using Support Vector Machines. Creates a high or infinite dimensional one or many hyperplanes and clusters classes on that space.
+\begin{enumerate}
+\item SVC(kernel='poly'): Polynomial kernel for SVM.
+\item SVC(kernel='sigmoid'): Sigmoid kernel for SVM.
+\end{enumerate}
+\item LinearSVC: SVM with linear kernel.
+\item KNeighborsClassifier: K-Nearest Neighbours classifier.
+\begin{enumerate}
+\item KNeighborsClassifier(n\_neighbors=8, weights="uniform"): Uses uniform weights to classify neighbours.
+\item KNeighborsClassifier(n\_neighbors=8, weights="distance"): Inverse of distance weights. Closer neighbours have a greater influence on classification.
+\end{enumerate}
+\item MultinomialNB: Multinomial Naive Bayes, assumes a Multinomial Distribution of features.
+\item BernoulliNB: Bernoulli Naive Bayes, assumes a Bernoulli Distribution of features.
+\item DecisionTreeClassifier: Creates a rule based decision tree inferred from data for predict.
+\item AdaBoostClassifier(n\_estimators=170): Fits N($n\_estimators$) Decision Tree Classifiers to samples from training data. Then assigns them weights based on errors. Using those weights, casts a voting to find the best prediction.
+\end{enumerate}
+\normalsize
+We have tried those 22 combination of algorithms and parameters, with 3 different data configuration parameters; 
+\footnotesize
+\begin{enumerate}
+\item Binary Classification
+\item Include user history
+\item Ngram
+\end{enumerate}
+\normalsize
+
+Resulting with 8 different data configurations and 176 different combinations.
+
+\subsubsection{Precision, Recall, Fscore}
+To represent the results of those 176 combination, micro precision, recall and fscore are used.
+\subsubsection{Execution}
+To execute those tasks, we have decided to use Google Cloud instances. Google Cloud offers 300\$ trial usage for users who want to try out their services and it allows up to 32 cores in this trial period. We have implemented an argument to execute all those tasks on multiple google cloud instances, in parallel. Created a template operating system including an executable version of our implementation. Created 15 two core execution instances from this template, 1 MongoDB instance to serve data, store results and progress. It took 35 mins to finish the execution of those 176 tasks. 
 
 
-% Acknowledgements should go at the end, before appendices and references
+\section{Results}
+Using Scikit-learn\cite{scikit-learn} we tried location classification using 22 models on 8 different settings. Those results have been shared in Figure 1 and 2. Figures contain 12 subfigures, showing precision, recall and f1scores for different combinations of ngram(1,2) and include user history(0,1) parameters. Each figure contains the relative micro results for 22 different models using the Box plots\cite{mcgill1978variations}. Each box plot shows outliers with plusses(+), max and min value as dashes, a bounding box of upper and lower quartiles, a red dash showing the mean(instead of median). Because each class contains equal amount of data, mean of micro precision, recall and f1score can be interpreted as the macro precision, recall and f1score. Each subfigure contains a green line indicating the baseline macro precision, recall or f1score. In subfigures, models have been labelled with numbers ranging between 0 and 21. Those labels are given in Table 1. 
 
-% \acks{We would like to acknowledge support for this project
-% from the National Science Foundation (NSF grant IIS-9988642)
-% and the Multidisciplinary Research Program of the Department
-% of Defense (MURI N00014-00-1-0637). }
+Tall boxes in the figures represent unstable results, mostly caused by models predicting one or more classes better than others or failing to classify one or more classes not as good as others.
 
-% Manual newpage inserted to improve layout of sample file - not
-% needed in general before appendices/bibliography.
+\begin{table}
+\scriptsize
+    \begin{tabular}{|c|l||c|l|}
+	\hline 
+		0 & LogisticRegressionCV & 1 & SGDClassifier(loss="hinge") \\ \hline
+		2 & SGDClassifier(loss="log")&  3 & SGDClassifier(loss="modified\_huber") \\ \hline
+		4 & SGDClassifier(loss="squared\_hinge") & 5 & SGDClassifier(loss="perceptron") \\ \hline
+		6 & SGDClassifier(loss="squared\_loss") & 7 & SGDClassifier(loss="huber")\\ \hline
+		8 &SGDClassifier(loss="epsilon\_insensitive") & 9 & SGDClassifier(loss="squared\_epsilon\_insensitive") \\ \hline
+		10 & Perceptron & 11 & PassiveAggressiveClassifier(loss="hinge")\\ \hline
+		12 & PassiveAggressiveClassifier(loss="squared\_hinge") & 13 & SVC(kernel="poly") \\ \hline
+		14 & SVC(kernel="sigmoid") & 15 & LinearSVC\\ \hline
+		16 & KNeighborsClassifier(weights="uniform") & 17 & KNeighborsClassifier(weights="distance") \\ \hline
+		18 & MultinomialNB & 19 & BernoulliNB\\ \hline
+		20 & DecisionTreeClassifier & 21 & AdaBoostClassifier\\ \hline
+	\end{tabular}
+	\caption{Classifier Model Labels}
+\end{table}
+\normalsize
+\subsection{Parameters}
 
+\subsubsection{Ngram}
+Effects of including token bigrams with unigrams did not have major implications in the results. This parameter has changed the average f1scores of models by +0.04 to -0.05. 
+
+\subsubsection{Including User History}
+Including history in the training and testing phases reduced the classifier performances in almost all cases. Overall average decrease in f1scores was 0.076 with values 
+ranging from 0.21 to -0.09.
+
+\subsection{Multi-Class Classification}
+Baseline for Multi-Class classification is 0.125. Since we have 8 classes in total for this task, if a model has predicted only one class, that baseline value would be the macro precision, recall and f1score. 
+For this task, top result was achieved by LogisticRegressionCV with an fscore of 0.443 and a recall of 0.50.
+
+\subsection{Binary Classification}
+Baseline for this task is 0.5. With bigrams, BernoulliNB, SGD with modified huber loss function and SGD with hinge loss function have achieved the top 3 f1scores of 0.734, 0.726, 0.72, respectively. 
+Only with unigrams BernoulliNB, MultinomialNB and PassiveAgressiveClassifier with hinge loss function achieved the top 3 f1scores of 0.726, 0.719 and 0.717, respectively. 
+
+
+\section{Conclusion and Discussion}
+In this research we have seen that binary classification on tweet locations can get up to 73\% macro precision. Compared to previous studies dealing with this problem in a multi-class perspective, if the task is to predict if a tweet is belonging to one particular location, this looks like a promising result. But the fact of all our data belonging to geotagged tweets may compromising the validity of these results.
+
+Refining the training dataset with less application generated content and more data would yield with more authentic research result.
+\noindent\begin{sidewaysfigure}
+    \centering
+    \includegraphics[width=\paperwidth]{figures/binary.eps}
+    \caption{Binary classification results}
+\end{sidewaysfigure}
+\noindent\begin{sidewaysfigure}
+    \centering
+    \includegraphics[width=\paperwidth]{figures/multi_class}
+    \caption{Multi-Class classification results}
+\end{sidewaysfigure}
 \newpage
 
-\appendix
-\section*{Appendix A.}
-\label{app:theorem}
-
-% Note: in this sample, the section number is hard-coded in. Following
-% proper LaTeX conventions, it should properly be coded as a reference:
-
-%In this appendix we prove the following theorem from
-%Section~\ref{sec:textree-generalization}:
-
-In this appendix we prove the following theorem from
-Section~6.2:
-
-\noindent
-{\bf Theorem} {\it Let $u,v,w$ be discrete variables such that $v, w$ do
-not co-occur with $u$ (i.e., $u\neq0\;\Rightarrow \;v=w=0$ in a given
-dataset $\dataset$). Let $N_{v0},N_{w0}$ be the number of data points for
-which $v=0, w=0$ respectively, and let $I_{uv},I_{uw}$ be the
-respective empirical mutual information values based on the sample
-$\dataset$. Then
-\[
-	N_{v0} \;>\; N_{w0}\;\;\Rightarrow\;\;I_{uv} \;\leq\;I_{uw}
-\]
-with equality only if $u$ is identically 0.} \hfill\BlackBox
-
-\noindent
-{\bf Proof}. We use the notation:
-\[
-P_v(i) \;=\;\frac{N_v^i}{N},\;\;\;i \neq 0;\;\;\;
-P_{v0}\;\equiv\;P_v(0)\; = \;1 - \sum_{i\neq 0}P_v(i).
-\]
-These values represent the (empirical) probabilities of $v$
-taking value $i\neq 0$ and 0 respectively.  Entropies will be denoted
-by $H$. We aim to show that $\fracpartial{I_{uv}}{P_{v0}} < 0$....\\
-
-{\noindent \em Remainder omitted in this sample. See http://www.jmlr.org/papers/ for full paper.}
-
-
-\vskip 0.2in
-\bibliography{sample}
-
+\bibliographystyle{alpha}
+\bibliography{paper}
 \end{document}
