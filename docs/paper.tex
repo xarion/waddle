@@ -115,7 +115,7 @@ These implementations also had a different structure. Instead of token counts us
 
 \subsubsection{Multinomial Naive Bayes}
 
-For this experiment, MultinomialNB(Multinomial Naive Bayes) implementation is selected. This implementation has achieved a higher macro accuracy results of 0.19, 0.24 for first and second configurations, respectively. But when we investigated the micro accuracy we have seen that the classifier almost always predicted the location with highest amount of tweets.
+For this experiment, MultinomialNB(Multinomial Naive Bayes) implementation is selected. This implementation has achieved a higher macro accuracy results of 0.19, 0.24 for first and second configurations, respectively. But when we investigated the accuracy we have seen that the classifier almost always predicted the location with highest amount of tweets.
 
 \subsubsection{Normalisation of Documents per Class}
 To prevent the problem in the last experiment, we have normalised the dataset by accepting equal amount of documents per class. Upon normalising the number of documents per class, we have achieved accuracy rates of 0.29, 0.42 for first and second data configurations.
@@ -180,13 +180,13 @@ We have tried those 22 combination of algorithms and parameters, with 3 differen
 Resulting with 8 different data configurations and 176 different combinations.
 
 \subsubsection{Precision, Recall, Fscore}
-To represent the results of those 176 combination, micro precision, recall and fscore are used.
+To represent the results of those 176 combination, precision, recall and fscore are used.
 \subsubsection{Execution}
 To execute those tasks, we have decided to use Google Cloud instances. Google Cloud offers 300\$ trial usage for users who want to try out their services and it allows up to 32 cores in this trial period. We have implemented an argument to execute all those tasks on multiple google cloud instances, in parallel. Created a template operating system including an executable version of our implementation. Created 15 two core execution instances from this template, 1 MongoDB instance to serve data, store results and progress. It took 35 mins to finish the execution of those 176 tasks. 
 
 
 \section{Results}
-Using Scikit-learn\cite{scikit-learn} we tried location classification using 22 models on 8 different settings. Those results have been shared in Figure 1 and 2. Figures contain 12 subfigures, showing precision, recall and f1scores for different combinations of ngram(1,2) and include user history(0,1) parameters. Each figure contains the relative micro results for 22 different models using the Box plots\cite{mcgill1978variations}. Each box plot shows outliers with plusses(+), max and min value as dashes, a bounding box of upper and lower quartiles, a red dash showing the mean(instead of median). Because each class contains equal amount of data, mean of micro precision, recall and f1score can be interpreted as the macro precision, recall and f1score. Each subfigure contains a green line indicating the baseline macro precision, recall or f1score. In subfigures, models have been labelled with numbers ranging between 0 and 21. Those labels are given in Table 1. 
+Using Scikit-learn\cite{scikit-learn} we tried location classification using 22 models on 8 different settings. Those results have been shared in Figure 1 and 2. Figures contain 12 subfigures, showing precision, recall and f1scores for different combinations of ngram(1,2) and include user history(0,1) parameters. Each figure contains the relative results for 22 different models using the Box plots\cite{mcgill1978variations}. Each box plot shows outliers with plusses(+), max and min value as dashes, a bounding box of upper and lower quartiles, a red dash showing the mean(instead of median). Because each class contains equal amount of data, mean of precision, recall and f1score can be interpreted as the macro precision, recall and f1score. Each subfigure contains a green line indicating the baseline macro precision, recall or f1score. In subfigures, models have been labelled with numbers ranging between 0 and 21. Those labels are given in Table 1. 
 
 Tall boxes in the figures represent unstable results, mostly caused by models predicting one or more classes better than others or failing to classify one or more classes not as good as others.
 
