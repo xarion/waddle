@@ -61,7 +61,8 @@ Revolving around our hypothesis, the research question we're trying to answer is
 
 % \cite{graham2014world} studied the problems with the baselines accepted by recent studies and explained why location and language classification is not an easy problem and how some of the assumptions are incorrect, such as accepting the device location as user's location. 
 
-\section{Method}
+\section{Methods}
+
 \subsection{Data Collection and Filtering}
 
 Using Twitter's sample status streaming api\footnote{https://dev.twitter.com/streaming/reference/get/statuses/sample}, we have sampled the public tweets. This api samples approximately 1\% of all the public tweets around the world. To be able to find the tweets that are relevant to our task, we have applied some filters to this api. 
@@ -74,53 +75,49 @@ Considering the language assumption, having tweets from non-English speaking cou
 
 Running the data collector for 1 month, we have collected a dataset consisting of 33112 tweets, geotagged within United States, tagged as English and each from a unique user.
 
-Since each tweet is consisting of at most 140 characters, our dataset might not be enough to extract the textual features we're interested in. To enrich our database, we assumed that our users are not actively travelling. Therefore, we have collected past 40(at most) tweets of these users and attached them to the sampled tweet as history.
-
 Assuming we had a dataset, big enough for the task, we examined a small sample of it. In this sample, we have seen many examples which were not composed by humans, but bots(e.g. "\textit{Police department activity on \#I95 SB at 3rd Avenue; Exit 3}"). Twitter also gives the information on which application is used to send a tweet. We have examined this information, called \textit{source}, to filter these tweets. Grouping and sorting them by the number of tweets, we were able to see which sources are most relevant for our study. Annotating the most relevant 20(e.g. \textit{Twitter for iPhone}, \textit{Facebook} and etc.) we have created the whitelist filter for tweet sources.
 
-In our examination, we have also seen a variety of geotag names which represent the high-level locations we're interested in(e.g. \textit{Mississippi, USA}, \textit{Manhattan, NY} and etc.). When we checked the number of tweets per location, we have seen that there are 4898 unique locations in the whole dataset with different granularities(e.g. state, city, borough and etc). We have picked 8 of the most common locations(e.g. \textit{Manhattan, NY}, \textit{Los Angeles, CA}, \textit{Houston, TX} and etc.). 
+In our examination, we have also seen a variety of geotag names which represent the high-level locations we're interested in(e.g. \textit{Mississippi, USA}, \textit{Manhattan, NY} and etc.). When we checked the number of tweets per location, we have seen that there are 3306 unique locations in the whole dataset with different granularities(e.g. state, city, borough and etc). Upon examining these locations, we have seen that it was not worth merging these locations with small granularities(e.g. boroughs) to higher levels(e.g. cities). Also we are not interested in location definitions higher than cities. Therefore, we have picked 8 of the most common locations(e.g. \textit{Manhattan, NY}, \textit{Los Angeles, CA}, \textit{Houston, TX} and etc.) ignoring states. 
 
-When we applied all these filters, we ended up having a dataset containing 8 locations, each of them having between 986 to 180 tweets.
+When we applied all these filters, we ended up having a dataset containing 8 locations, each of them having between 986 to 180 tweets, summing up to 3176.
+
+Since each tweet is limited by 140 characters, and our dataset is shrank to only 4751 tweets, our dataset might not be enough to extract the textual features we are interested in. To enrich our database, we assumed that our users are always sending tweets from the same location. Therefore, we have collected past 40 tweets of these users and attached them to the sampled tweet as \textit{past tweets}.
+
+In all our experiments, we have splitted our datasets 50\% by 50\% training and test datasets.
+\subsection{Tools}
+sklearn python mongo
+
+
 
 \subsection{Empirical Bayes}
-% TODO twokenize footnote
-To better understand the data, we have created a posterior with empirical prior\cite{carlin1997bayes} and used MAP estimation\cite{degrooth} to find the best classification result. Tokenised each tweet using the $twokenize$ module\cite{gimpel2011part}, to convert them to a $bag\ of\ words$, calculate the probability of each "token given location" and the probability of each location to find their probabilities. 
+
+In the process of filtering data, we have implemented an Empirical Bayes\cite{carlin1997bayes} classifier using MAP estimation\cite{degrooth} to perform multi-class classification. We chose Empirical Bayes because it was easy to implement and it was not assuming any independency between data points, which was required when using past tweets, which may be dependent to each other. Implementing this algorithm also helped us to understand the nature of data, and also we somehow tried to reproduce results similar to previous research.
 \begin{equation*}
 \begin{split}
-\mathbf{T} &= Tokens \\
+\mathbf{T}_i & = \text{tokens of $i$th tweet }\\
+t_{ni} & = \text{$n$th token of $i$th tweet }\\
 L &= Location \\
-p(L|\mathbf{T}) &= \frac{p(\mathbf{T} | L)p(L)}{p(T)}
+p(L|\mathbf{T}_i) &= \frac{p(\mathbf{T}_i | L)p(L)}{p(\mathbf{T}_{i})} 
 \end{split}
 \end{equation*}
-With likelihood $p(\mathbf{T} | L)$ and prior $p(\mathbf{L})$. 
+To train this algorithm, we have created a likelihood($p(t | L)$) and an empirical prior. To calculate the likelihood, we have tokenized each tweet using the $twokenize$ module\cite{gimpel2011part}, labelled them with the location and calculated the "probability of a token given location". As for the prior we have generated the empirical prior, which is the occurrences of a location divided by the number of data points. As a result of training, we have stored the likelihood and prior.
 
-For the prior, instead of assuming a distribution, we have generated an empirical prior and applied MAP estimate to the posterior;
+To predict where a tweet has been sent from we have applied MAP estimate to the Empirical Bayes. For each tweet in our test dataset, we have tokenized the tweet, queried the likelihood values for each token and location, combined these probabilities per location, applied the empirical prior and choose the location with the maximum probability.
 \begin{equation*}
-\hat{L} = \arg\max_L\{p(\mathbf{T} | L) P(L)\}
+\hat{L} = \arg\max_L\{p(\mathbf{T}_i | L) p(L)\}\\
 \end{equation*}
-where;
 \begin{equation*}
-\begin{split}
-p(\mathbf{T} | L) &= \prod_i{p(t_i|L)}\\
-\end{split}
+p(\mathbf{T_i} | L) = \prod_n{p(t_{ni}|L)}
 \end{equation*}
-Empirical prior $p(L)$ is referring to the probability of a location L in the training data.
 
-This experiment have been tested for 2 different configurations. In the first configuration, the collection of sample tweets from a user and the geotagged tweet belonging to same user are accepted as one document, assuming the location of the geotagged tweet. In the second configuration, each sample tweet of an individual are accepted as separate documents with same assumption. 
+To test the assumption we made to enrich our dataset, this experiment was ran with 2 configurations one using past tweets and other using sampled tweets. In the first configuration, we labelled each past tweet with the high-level location of the related sample(tweet). We have used this configuration to test our assumption of users are always sending tweets within same high-level location, thus we can use their pasts. In the second configuration, we only used the sample tweets and their high-level locations as labels.
 
-\subsubsection{Implementation}
-First run of the experiment with the whole dataset resulted with 0.02 and 0.04 accuracy rates for the first and second configurations, respectively. After this experiment, we have seen that the assumption on the second configuration is better than the first one. The rest of this experiment is ran with the second configuration.
+First run of the experiment, without applying filters to the dataset, resulted with 0.02 and 0.04 accuracy rates for the first and second configurations, respectively. After this experiment, we have seen that the assumption on the first configuration did not improve our results, so this is not likely to be true. The rest of this Empirical Bayes experiment was ran only with the sampled tweets.
 
-One problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, tweets containing this token got a probability of 0. To solve this problem, we have ignored those tokens. Second run of this classifier resulted with an accuracy rate of 0.05.
-
-\subsubsection{Source Filtering}
-Upon investigating the dataset, we have realised that there are a lot of low quality, automated tweets, coming from 886 different tweet sources(devices or applications that a tweet has been sent from). To remove these sources, we have created a whitelist of most used 20 sources that selects applications which real users use to tweet from. This reduced the amount of data by around half, to 17040 individual geotagged tweets. Third run of the experiment for those 20 sources improved the accuracy to 0.09. 
-
-\subsubsection{Location Filtering}
-Investigating the locations the tweets has been sent, we have seen that there are 3306 different locations(location full name in this case) that tweets have been geotagged with. Most of them having only 1 tweet. We have created another whitelist for locations, only including the top 10. This has reduced the dataset to 4751 individual geotagged tweets. Taking a closer look to those 10 locations, we have seen that there are 1 neighbourhood, 2 states and 7 cities. To have finer class definitions, we have removed those 2 states from location whitelist. Running the experiment for the last time, we have acquired an accuracy of 0.11. Which doesn't seem better than making random classifications for 8 locations.
+One problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, we didn't know the likelihood of that token. So if tweet contains a token which did not appear on that location in training, that tweet got a probability of 0 for that location, regardless of the other tokens. To solve this problem, we have ignored those tokens in our calculations. Second run of the Empirical Bayes resulted with an accuracy rate of 0.05. When we applied the location whitelist, we have achieved an accuracy of 0.11. Which doesn't seem better than making random classifications for 8 locations or picking the location which occurred the most. So our experiment with Empirical Bayes classifier failed to produce results better than random, but it helped us understand the data and what kind of filters we need to apply.
 
 \subsection{Scikit Learn - Multinomial Naive Bayes}
-This experiment uses the Multinomial Naive Bayes model to predict classes. This model captures information on documents as an ordered sequence of tokens\cite{mccallum1998comparison}, using a Multinomial Distribution. We have used the method implemented in Scikit Learn\cite{scikit-learn}(sklearn, v0.17).
+This experiment uses the Multinomial Naive Bayes(NB) model implemented in Scikit Learn \cite{scikit-learn}(sklearn, v0.17) to perform multi-class predictions. This model captures information on documents as an ordered sequence of tokens\cite{mccallum1998comparison}, using a Multinomial Distribution.
 
 Also, in this experiment, we have redefined the data configurations. For the first data configuration, all tweets of a user are tagged with the original tweet's geotag location.  For the second configuration, we have ignored the user history and only used the geotagged tweets.
 
@@ -241,6 +238,7 @@ Only with unigrams BernoulliNB, MultinomialNB and PassiveAgressiveClassifier wit
 
 
 \section{Conclusion and Discussion}
+To improve Empirical Bayes, we have ignored tokens that are not appearing in a location. This was not a valid solution for this problem!
 In this research we have seen that binary classification on tweet locations can get up to 73\% macro precision. Compared to previous studies dealing with this problem in a multi-class perspective, if the task is to predict if a tweet is belonging to one particular location, this looks like a promising result. But the fact of all our data belonging to geotagged tweets may compromising the validity of these results.
 
 Refining the training dataset with less application generated content and more data would yield with more authentic research result.
