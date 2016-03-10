@@ -29,6 +29,9 @@
 \author{\name Erdi \c{C}all{\i}  \email e.calli@student.ru.nl}
 \maketitle
 \begin{abstract}
+
+We extracted textual features that hint to a user's location by comparing different methods. Unlike some of the previous studies, we have only used individual tweet texts, geolocation of those tweets and simplified the question to a binary classification problem. Our results are showing up to 74\% recall rates.
+
 % Previous research on Twitter user location classification is mostly focusing on multi-class prediction. Approaching at the same problem from another perspective, in some cases, it may be enough to answer if someone belongs to a location or not. In this perspective, we have compared some models for predicting tweet locations using Binary and Multi-Class Classification. We have seen that if the problem at hand is reducible to Binary Classification, it is possible to make much better predictions.
 
 \end{abstract}
@@ -40,26 +43,24 @@ Twitter is an online platform that lets users to share posts with their follower
 
 To be able to infer this information, we can try to use linguistic habits shared by the people who are within the same location. As humans, our spatial cognition deals with updating and managing the knowledge about our environment. Spatial cognition changes when we move between environments, but as we stay within the boundaries of a high level environment(i.e. state, city, borough), there may be some high-level constants that doesn't change. If some of these constants are shared commonly between people, it may lead them to have similar linguistic habits, in this case, textual features in their tweets. If we group the geotagged tweets sent within a high-level location, it may be possible to extract these features, if they exist.
 
-Using similar features, previous research tries to determine the geolocation of a tweet using multi-class classification algorithms. These methods are trying to determine the most likely geolocation for a tweet from a list(e.g. cities in a country). It is sometimes hard to do that, because we need data from all cities. Also the algorithms and the implementations become more complicated. Thus, in cases where we just want to know if someone is within a state/city/borough or not, this approach becomes unnecessarily heavy. In this research, we are simplifying this problem by using binary classification algorithms, which are trying to determine if a tweet sent within the boundaries of a location(i.e. Manhattan, NY) or not. 
+Using similar features, previous research tries to determine the geolocation of a tweet using multi-class classification algorithms. These methods are trying to determine the most likely geolocation for a tweet from a list(e.g. cities in a country). It is sometimes hard to do that, because we need data from all cities. Also the algorithms and the implementations become more complicated. Thus, in cases where we just want to know if someone is within a state/city/borough, this approach becomes unnecessarily heavy. In this research, we are simplifying this problem by using binary classification algorithms, which are trying to determine if a tweet sent within the boundaries of a location(i.e. Manhattan, NY). 
 
-Revolving around our hypothesis, the research question we're trying to answer is: "Are there textual features in tweets, that are common for people within the same location? If there are, can they help us determine if a tweet is sent within that high-level location, or not?"
+Revolving around our hypothesis, the research question we're trying to answer is: "Are there textual features in tweets, that are common for people within the same location? If there are, can they help us determine if a tweet is sent within that high-level location?"
 
 
 \section{Related Work}
 
-% Using text mining methods and location tags in tweets, \cite{cheng2010you} redefined this problem. \cite{cheng2010you} used only the text data and introduced a method that identifies the words with strong local geo-scope. This study achieved up to 51\% accuracy to locate users within a 100 mile radius. 
+Similar to our work, using textual features in tweets and geotags, Cheng et al.approached this question as a regression problem\cite{cheng2010you}. They have located users within a 100 mile radius and achieved up to 51\% accuracy. To do that, they used only the textual features and introduced a method that identifies these features(i.e. unique words) with strong local geo-scope.
 
-% \cite{hecht2011tweets} introduced the $CALGARI$ classifying algorithm specific to this problem, focusing on country and state prediction. They got a 72\% accuracy for classifying 4 countries and 30\% accuracy on classifying 18 states. 
+Hecht et al. introduced the $CALGARI$ classification algorithm specific to this problem, focusing on a higher granularity of country and state prediction\cite{hecht2011tweets}. They got a 72\% accuracy for classifying 4 countries and 30\% accuracy on classifying 18 states. Their method was depending on the location information revealed by users in their tweets, and classifying user's location based on their past tweets.
 
-% \cite{eisenstein2010latent} created a geographic topic model to make use of the textual differences in topics based on regions, they got a median distance error of 494 kms. 
+Eisenstein et al. created a model using textual features in different topics(e.g. Sports, Entertainment)\cite{eisenstein2010latent}. Their research got a median distance error of 494 km for individual tweets.
 
-% \cite{wing2011simple} tried to solve this problem using geotagged Wikipedia articles and tweet texts, focusing on predicting the geolocation. Their work has obtained a median error of 479 km's for tweets. 
+Wing et al. created another model by combining geotagged Wikipedia articles and tweet texts\cite{wing2011simple}. They have created geodesic grids varying in size, and they have obtained a median error of 479 km for individual tweets. 
 
-% \cite{mahmud2012tweet} introduced hierarchical classification methods combined with statistical methods. They have achieved 58\%, 66\% and 78\% accuracy on city, state and timezone levels, respectively. Also their findings show that users may be able to partially hide their locations, making their tweets untraceable. Same researchers revisited the problem in \cite{mahmud2014home}, trying to classify the home location of users, achieving similar results and also introducing movement and location prediction. 
+Mahmud et al. introduced hierarchical classification methods combined with statistical methods\cite{mahmud2012tweet}. They have used tweet texts as well as tweeting behaviour to achieve 58\%, 66\% and 78\% accuracy on city, state and timezone levels, respectively.  Same researchers revisited the problem in, trying to classify the home location of users, achieving similar results and also introducing movement and location prediction\cite{mahmud2014home}. 
 
-% \cite{sadilek2012finding} approached this problem introducing the friend information, constructing a friend location graph. Their study was able to achieve 77\% to 84.3\% accuracy, relative to available number of friends.
-
-% \cite{graham2014world} studied the problems with the baselines accepted by recent studies and explained why location and language classification is not an easy problem and how some of the assumptions are incorrect, such as accepting the device location as user's location. 
+Also, Graham et al. studied the problems with the baselines accepted by recent studies and explained why location and language classification is not an easy problem and how some of the assumptions are incorrect, such as accepting the device location as user's location\cite{graham2014world}. 
 
 \section{Methods}
 
@@ -79,11 +80,11 @@ Assuming we had a dataset, big enough for the task, we examined a small sample o
 
 In our examination, we have also seen a variety of geotag names which represent the high-level locations we're interested in(e.g. \textit{Mississippi, USA}, \textit{Manhattan, NY} and etc.). When we checked the number of tweets per location, we have seen that there are 3306 unique locations in the whole dataset with different granularities(e.g. state, city, borough and etc). Upon examining these locations, we have seen that it was not worth merging these locations with small granularities(e.g. boroughs) to higher levels(e.g. cities). Also we are not interested in location definitions higher than cities. Therefore, we have picked 8 of the most common locations(e.g. \textit{Manhattan, NY}, \textit{Los Angeles, CA}, \textit{Houston, TX} and etc.) ignoring states. 
 
-When we applied all these filters, we ended up having a dataset containing 8 locations, each of them having between 986 to 180 tweets, summing up to 3176.
+When we applied all these filters, we ended up having a dataset containing 8 locations, each of them having between 976 to 212 tweets, summing up to 3176.
 
 Since each tweet is limited by 140 characters, and our dataset is shrank to only 4751 tweets, our dataset might not be enough to extract the textual features we are interested in. To enrich our database, we assumed that our users are always sending tweets from the same location. Therefore, we have collected past 40 tweets of these users and attached them to the sampled tweet as \textit{past tweets}.
 
-In all our experiments, we have splitted our datasets 50\% by 50\% training and test datasets.
+In all our experiments, we have splitted our datasets 0.5 by 0.5 training and test datasets.
 \subsection{Tools}
 sklearn python mongo
 
@@ -100,7 +101,7 @@ L &= Location \\
 p(L|\mathbf{T}_i) &= \frac{p(\mathbf{T}_i | L)p(L)}{p(\mathbf{T}_{i})} 
 \end{split}
 \end{equation*}
-To train this algorithm, we have created a likelihood($p(t | L)$) and an empirical prior. To calculate the likelihood, we have tokenized each tweet using the $twokenize$ module\cite{gimpel2011part}, labelled them with the location and calculated the "probability of a token given location". As for the prior we have generated the empirical prior, which is the occurrences of a location divided by the number of data points. As a result of training, we have stored the likelihood and prior.
+To train this algorithm, we created a likelihood($p(t | L)$) and an empirical prior. To calculate the likelihood, we have tokenized each tweet using the $twokenize$ module\cite{gimpel2011part}, labelled them with the location and calculated the "probability of a token given location". As for the prior we have generated the empirical prior, which is the occurrences of a location divided by the number of data points. As a result of training, we have stored the likelihood and prior.
 
 To predict where a tweet has been sent from we have applied MAP estimate to the Empirical Bayes. For each tweet in our test dataset, we have tokenized the tweet, queried the likelihood values for each token and location, combined these probabilities per location, applied the empirical prior and choose the location with the maximum probability.
 \begin{equation*}
@@ -110,42 +111,52 @@ To predict where a tweet has been sent from we have applied MAP estimate to the 
 p(\mathbf{T_i} | L) = \prod_n{p(t_{ni}|L)}
 \end{equation*}
 
-To test the assumption we made to enrich our dataset, this experiment was ran with 2 configurations one using past tweets and other using sampled tweets. In the first configuration, we labelled each past tweet with the high-level location of the related sample(tweet). We have used this configuration to test our assumption of users are always sending tweets within same high-level location, thus we can use their pasts. In the second configuration, we only used the sample tweets and their high-level locations as labels.
+To test our assumption about past tweets, this experiment was ran with 2 configurations one using past tweets and other using sampled tweets. In the first configuration, we combined each past tweet to one document and labelled them with the high-level location of the related sample(tweet). We have used this configuration to test our assumption of users are always sending tweets within same high-level location. In the second configuration, we only used the sample tweets and their high-level locations as labels.
 
-First run of the experiment, without applying filters to the dataset, resulted with 0.02 and 0.04 accuracy rates for the first and second configurations, respectively. After this experiment, we have seen that the assumption on the first configuration did not improve our results, so this is not likely to be true. The rest of this Empirical Bayes experiment was ran only with the sampled tweets.
+First run of the experiment, without applying filters to the dataset, resulted with 0.02 and 0.04 macro-average precision rates for the first and second configurations, respectively. After this experiment, we have seen that the assumption about past tweets did not improve our results. The rest of this Empirical Bayes experiment was ran only with the second configuration, sampled tweets.
 
-One problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, we didn't know the likelihood of that token. So if tweet contains a token which did not appear on that location in training, that tweet got a probability of 0 for that location, regardless of the other tokens. To solve this problem, we have ignored those tokens in our calculations. Second run of the Empirical Bayes resulted with an accuracy rate of 0.05. When we applied the location whitelist, we have achieved an accuracy of 0.11. Which doesn't seem better than making random classifications for 8 locations or picking the location which occurred the most. So our experiment with Empirical Bayes classifier failed to produce results better than random, but it helped us understand the data and what kind of filters we need to apply.
+One problem with this experiment was, if a token($t_x$) didn't appear in the training dataset, we didn't know the likelihood of that token. So if there is a token did not appear in the training, the tweets containing that token got a probability of 0 for all locations, regardless of the other tokens. To solve this problem, we have ignored those tokens in our calculations. This solution, is not mathematically correct because ignoring a token means setting it's probability to 1. Still, replacing those probabilities improved the macro-average precision to 0.05.
 
-\subsection{Scikit Learn - Multinomial Naive Bayes}
-This experiment uses the Multinomial Naive Bayes(NB) model implemented in Scikit Learn \cite{scikit-learn}(sklearn, v0.17) to perform multi-class predictions. This model captures information on documents as an ordered sequence of tokens\cite{mccallum1998comparison}, using a Multinomial Distribution.
+When we applied the location whitelist, we have achieved a macro-average precision of 0.11. Which doesn't seem better than making random classifications for 8 locations or picking the location which occurred the most. 
 
-Also, in this experiment, we have redefined the data configurations. For the first data configuration, all tweets of a user are tagged with the original tweet's geotag location.  For the second configuration, we have ignored the user history and only used the geotagged tweets.
+So our experiment with Empirical Bayes classifier failed to produce results better than any baseline, but it helped us understand the nature of data and what kind of filters we need to apply.
 
-These implementations also had a different structure. Instead of token counts used in the first experiment, we have used tf-idf scores. Also sparse matrix implementation of Numpy is used to represent those frequencies by default. We have stopped using the $twokenize$ module and switched to the internal tokenizer of sklearn.
+\subsection{Scikit Learn - Experiment Setup}
+After failing to produce results better than making random choices, we decided to use the Scikit Learn \cite{scikit-learn}(sklearn, v0.17) library to actually test our hypothesis using binary classification and compare our results with multi-class classification.
+
+In this set of experiments, we have re-define our experiment setting. Since we started using a library, we have access to more complicated tools which helps us to define better experiment settings. This experiment uses sparse arrays to represent tweets. For each tweet, there is a 1 dimensional sparse array with columns representing tokens(in our dataset). Combining these, we have created two 2 dimensional sparse arrays, representing our training and test datasets. As for the values representing tokens, we have used tf-idf scores. 
+
+We chose tf-idf scores because we wanted to reduce the importance of stopwords and frequently used words. This experiment learns idf scores from the training dataset, and uses these scores to calculate the tf-idf scores for training and test datasets. 
+
+Using tf-idf scores and sparse arrays, we can't capture textual features created by a sequence of words. A good example to that would be \textit{The Empire State}. \textit{The}, \textit{Empire} and \textit{State} are words that could be used without a spatial context. Our sparse array would only contain individual information about the tf-idf scores of these tokens. So we are losing the information of using them together, which may be a textual feature, pointing to Manhattan, New York.
+
+To overcome this limitation, we included word ngram tf-idf scores in our sparse arrays. Doing so we got information about word sequences, which would possibly solve the problem. We have experimented with 2 configurations, first one using only the tokens or word unigrams, second one using  word unigrams with word bigrams. 
+
+We also tried to make use of past tweets by labelling them individually with the location of their sample tweet. We created 2 configurations for this, one using the sample tweets, other using the sample tweets.
+
+Putting it all together, we had 8 different configurations, combining the word ngrams, past/sample tweets and binary/multiclass classification. Again using the 0.5 by 0.5 split for train and test datasets.
 
 \subsubsection{Multinomial Naive Bayes}
 
-For this experiment, MultinomialNB(Multinomial Naive Bayes) implementation is selected. This implementation has achieved a higher macro accuracy results of 0.19, 0.24 for first and second configurations, respectively. But when we investigated the accuracy we have seen that the classifier almost always predicted the location with highest amount of tweets.
+To test our experiment setup, we chose MultinomialNB(Multinomial Naive Bayes) implementation for multi-class classification. MultinomialNB considers the 
+
+This implementation has achieved higher macro-average precision results compared to our Empirical Bayes experiment. Using unigrams to perform multi-class classification, we had macro-average precisions 0.19, 0.24 using past tweets and sample tweets, respectively. But when we investigated the predictions, we have seen that the classifier was almost always predicting the location with highest amount of tweets(Manhattan, NY).
 
 \subsubsection{Normalisation of Documents per Class}
-To prevent the problem in the last experiment, we have normalised the dataset by accepting equal amount of documents per class. Upon normalising the number of documents per class, we have achieved accuracy rates of 0.29, 0.42 for first and second data configurations.
-
-\subsubsection{Ngrams}
-To improve the results found in the last experiment, we have tried Ngrams in range (1,2). It did not result with an improvement in accuracy. The accuracy has decreased by 0.003 for both configurations.
-
-\subsubsection{Binary Classification}
-To be able to answer the question, which tweets are from given a location, we have changed our multi-class classification problem to a binary classification problem. Running tests to classify tweets from $Manhattan,\ NY$ by including previous improvements and ngrams in range (1,2) we have achieved accuracy rates of 0.71, 0.62 for first and second data configurations, respectively. 
+To prevent the problem we faced in MultinomialNB test, we have normalised the dataset number of documents per class. To do so, we normalized the number of documents per class by limiting the \textit{maximum number of documents per class} to the \textit{class with least amount of documents}. That reduced the elements in our training dataset to \textit{number of classes}(8) times \textit{number of documents in class with least documents}(e.g. \textit{Atlanta, GA} with 122 samples)  for multi-class configuration. For binary classification, we have used the class with maximum number of documents(e.g. \textit{Manhattan, NY} with 976 samples), and combined it with same amount of random samples for non-class training data. Upon normalisation, our multi-class training dataset shrank considerably, but we have achieved macro-average precision rates of 0.29, 0.42 for past tweets and sample tweets, using unigrams.
 
 \subsection{Scikit Learn - Algorithm Comparison}
-This experiment compares the classification methods implemented in Scikit Learn(sklearn)(v0.17) library with different configurations. Sklearn implements various classification methods such as, Logistic Regression, Perceptron, Support Vector Classifiers and etc. We have compared the sklearn methods under supervised learning\footnote{http://scikit-learn.org/stable/supervised\_learning.html}, applicable to classification and able to work with sparse matrices. We have also tried various parameters for those algorithms. Resulting set of algorithms and parameters was containing 22 combinations.
+To see which approach is best for our research question and what kind of token based textual features are useful for our task, we compared some classification methods implemented in Scikit Learn\footnote{http://scikit-learn.org/stable/supervised\_learning.html}. Scikit Learn implements various classification methods such as, Logistic Regression, Perceptron, Support Vector Classifiers and etc. 
+
+Scikit Learn implements different model configurations. A good example is, the loss function of SGDClassifier. There are 9 different loss functions implemented that we could use with SGDClassifier. In our experiment, we tried to capture some of these different parameters, and tried to explain them. But in most cases, we didn't try to fine tune the hyper-parameters.
 
 \begin{enumerate}
 \scriptsize
 
-\item LogisticRegressionCV: a linear model for classification. Uses a logistic function to calculate the class probabilities are of a single trial. This version uses cross validation to find optimal values for parameters.
-\item SGDClassifier: Stochastic Gradient Descent learning model supporting multiple loss functions and penalties. 
+\item LogisticRegressionCV: Uses a logistic function that combines the tf-idf scores with weights in a logistic function. This model is useful if our tf-idf scores have exponential effects.
+\item SGDClassifier: Stochastic Gradient Descent creates a linear function and gives initial weights to each token for each class. Based on the loss functions defined below, it tries to optimize these weights.
 \begin{enumerate}
-\item SGDClassifier(loss="hinge"): Hinge is a commonly used convex loss function for classification.
+\item SGDClassifier(loss="hinge"): Hinge is a commonly used linear loss function for classification.
 \item SGDClassifier(loss="log"): Converts SGD to a probabilistic logistic regression classifier.
 \item SGDClassifier(loss="modified\_huber"): Hinge with a setting, $\gamma=2$
 \item SGDClassifier(loss="squared\_hinge"): Quadratically penalised hinge.
@@ -155,105 +166,107 @@ This experiment compares the classification methods implemented in Scikit Learn(
 \item SGDClassifier(loss="epsilon\_insensitive"): Linear loss function, ignoring errors less than the threshold, epsilon.
 \item SGDClassifier(loss="squared\_epsilon\_insensitive"): Squared version of epsilon\_insensitive.
 \end{enumerate}
-\item Perceptron: Same as SGDClassifier(loss="perceptron") with a constant learning rate and different default parameters.
-\item PassiveAggressiveClassifier: Similar to Perceptron. Instead of using a learning rate, uses a regularisation term.
+\item Perceptron: Same as SGDClassifier(loss="perceptron"), updates the tf-idf weights with a constant learning rate and has different default parameters.
+\item PassiveAggressiveClassifier: Similar to Perceptron. Instead of using a learning rate, uses a regularisation term that makes sure that tf-idf weights don't get too big and prevents overfitting.
 \begin{enumerate}
 \item PassiveAggressiveClassifier(loss="hinge")
 \item PassiveAggressiveClassifier(loss="squared\_hinge")
 \end{enumerate}
-\item SVC: Classifier model using Support Vector Machines. Creates a high or infinite dimensional one or many hyperplanes and clusters classes on that space.
+\item SVC: Classifier model using Support Vector Machines. Converts tf-idf scores based on the kernel function to create a high or infinite dimensional hyperplanes by clustering classes on that space.
 \begin{enumerate}
 \item SVC(kernel='poly'): Polynomial kernel for SVM.
 \item SVC(kernel='sigmoid'): Sigmoid kernel for SVM.
 \end{enumerate}
-\item LinearSVC: SVM with linear kernel.
-\item KNeighborsClassifier: K-Nearest Neighbours classifier.
+\item LinearSVC: SVM with a linear kernel.
+\item KNeighborsClassifier: K-Nearest Neighbours classifier, uses weights function to cluster and classify tf-idf scores using the function given in weights. Finds the $n_neighbours$ number of tweets with most similar tokens from training dataset, casts a vote among them make predictions.
 \begin{enumerate}
 \item KNeighborsClassifier(n\_neighbors=8, weights="uniform"): Uses uniform weights to classify neighbours.
 \item KNeighborsClassifier(n\_neighbors=8, weights="distance"): Inverse of distance weights. Closer neighbours have a greater influence on classification.
 \end{enumerate}
-\item MultinomialNB: Multinomial Naive Bayes, assumes a Multinomial Distribution of features.
-\item BernoulliNB: Bernoulli Naive Bayes, assumes a Bernoulli Distribution of features.
+\item MultinomialNB: Gives probabilities for each token and class, combines them to find the most likely class.
+\item BernoulliNB: Similar to Multinomial, but instead of using tf-idf scores, considers if a token occurs in a tweet or not.
 \item DecisionTreeClassifier: Creates a rule based decision tree inferred from data for predict.
 \item AdaBoostClassifier(n\_estimators=170): Fits N($n\_estimators$) Decision Tree Classifiers to samples from training data. Then assigns them weights based on errors. Using those weights, casts a voting to find the best prediction.
 \end{enumerate}
 \normalsize
-We have tried those 22 combination of algorithms and parameters, with 3 different data configuration parameters; 
-\footnotesize
-\begin{enumerate}
-\item Binary Classification
-\item Include user history
-\item Ngram
-\end{enumerate}
-\normalsize
+We have tried those 22 models, with 8 configurations to create 176 different combinations.
 
-Resulting with 8 different data configurations and 176 different combinations.
-
-\subsubsection{Precision, Recall, Fscore}
-To represent the results of those 176 combination, precision, recall and fscore are used.
 \subsubsection{Execution}
-To execute those tasks, we have decided to use Google Cloud instances. Google Cloud offers 300\$ trial usage for users who want to try out their services and it allows up to 32 cores in this trial period. We have implemented an argument to execute all those tasks on multiple google cloud instances, in parallel. Created a template operating system including an executable version of our implementation. Created 15 two core execution instances from this template, 1 MongoDB instance to serve data, store results and progress. It took 35 mins to finish the execution of those 176 tasks. 
 
+To execute those tasks, we have used Google Cloud instances. Google Cloud offers 300\$ trial usage for users who want to try out their services and it allows up to 32 cores in this trial period. We have implemented an argument to execute all those tasks on multiple google cloud instances, in parallel. Created a template operating system including an executable version of our implementation. Using 15 two core execution instances from the execution template, 1 MongoDB instance, it took 35 mins to finish the execution of those 176 tasks. 
 
 \section{Results}
-Using Scikit-learn\cite{scikit-learn} we tried location classification using 22 models on 8 different settings. Those results have been shared in Figure 1 and 2. Figures contain 12 subfigures, showing precision, recall and f1scores for different combinations of ngram(1,2) and include user history(0,1) parameters. Each figure contains the relative results for 22 different models using the Box plots\cite{mcgill1978variations}. Each box plot shows outliers with plusses(+), max and min value as dashes, a bounding box of upper and lower quartiles, a red dash showing the mean(instead of median). Because each class contains equal amount of data, mean of precision, recall and f1score can be interpreted as the macro precision, recall and f1score. Each subfigure contains a green line indicating the baseline macro precision, recall or f1score. In subfigures, models have been labelled with numbers ranging between 0 and 21. Those labels are given in Table 1. 
 
-Tall boxes in the figures represent unstable results, mostly caused by models predicting one or more classes better than others or failing to classify one or more classes not as good as others.
+\subsection{Binary Classification Baselines}
+We have considered 2 baselines to compare our results for predicting \textit{Manhattan, NY}. First one is making random choices with a baseline macro-average precision/recall and f1-score of 0.5.
 
-\begin{table}
-\scriptsize
-    \begin{tabular}{|c|l||c|l|}
-	\hline 
-		0 & LogisticRegressionCV & 1 & SGDClassifier(loss="hinge") \\ \hline
-		2 & SGDClassifier(loss="log")&  3 & SGDClassifier(loss="modified\_huber") \\ \hline
-		4 & SGDClassifier(loss="squared\_hinge") & 5 & SGDClassifier(loss="perceptron") \\ \hline
-		6 & SGDClassifier(loss="squared\_loss") & 7 & SGDClassifier(loss="huber")\\ \hline
-		8 &SGDClassifier(loss="epsilon\_insensitive") & 9 & SGDClassifier(loss="squared\_epsilon\_insensitive") \\ \hline
-		10 & Perceptron & 11 & PassiveAggressiveClassifier(loss="hinge")\\ \hline
-		12 & PassiveAggressiveClassifier(loss="squared\_hinge") & 13 & SVC(kernel="poly") \\ \hline
-		14 & SVC(kernel="sigmoid") & 15 & LinearSVC\\ \hline
-		16 & KNeighborsClassifier(weights="uniform") & 17 & KNeighborsClassifier(weights="distance") \\ \hline
-		18 & MultinomialNB & 19 & BernoulliNB\\ \hline
-		20 & DecisionTreeClassifier & 21 & AdaBoostClassifier\\ \hline
-	\end{tabular}
-	\caption{Classifier Model Labels}
-\end{table}
-\normalsize
-\subsection{Parameters}
+The second baseline is through choosing tweets containing important keywords. To do so, we have created a regular expression and ran it through out dataset. This regular expression created a baseline macro-average precision of 0.8. Compared to the high macro-average precision, it had a very low recall 0.37 for predicting our location, \textit{Manhattan, NY}. Since we are interested in being able to say if a tweet is sent within a location, we're not going to use this baseline for comparison.
 
-\subsubsection{Ngram}
-Effects of including token bigrams with unigrams did not have major implications in the results. This parameter has changed the average f1scores of models by +0.04 to -0.05. 
+\begin{verbatim}
+.*(([Mm]anhattan)|([Nn]ew[ ]?[Yy]ork)|(NY)).*
+\end{verbatim} 
 
-\subsubsection{Including User History}
-Including history in the training and testing phases reduced the classifier performances in almost all cases. Overall average decrease in f1scores was 0.076 with values 
-ranging from 0.21 to -0.09.
 
-\subsection{Multi-Class Classification}
-Baseline for Multi-Class classification is 0.125. Since we have 8 classes in total for this task, if a model has predicted only one class, that baseline value would be the macro precision, recall and f1score. 
-For this task, top result was achieved by LogisticRegressionCV with an fscore of 0.443 and a recall of 0.50.
+Combining the random baseline and regular expression, we have created a new baseline. In this baseline, if the regular expression matches we classify this data as \textit{Manhattan, NY}, otherwise we make random choices. This combined baseline gives us a 0.68 recall, 0.57 precision and 0.62 f1-score for \textit{Manhattan, NY} with 0.59 macro-averaged recall, 0.59 macro-averaged precision and 0.59 macro-averaged f1-score. 
 
 \subsection{Binary Classification}
-Baseline for this task is 0.5. With bigrams, BernoulliNB, SGD with modified huber loss function and SGD with hinge loss function have achieved the top 3 f1scores of 0.734, 0.726, 0.72, respectively. 
-Only with unigrams BernoulliNB, MultinomialNB and PassiveAgressiveClassifier with hinge loss function achieved the top 3 f1scores of 0.726, 0.719 and 0.717, respectively. 
+
+Including bigrams, BernoulliNB, SGD with modified huber loss function and SGD with hinge loss function have achieved the top 3 macro-averaged f1scores of 0.734, 0.726, 0.72, respectively. 
+
+Only with unigrams BernoulliNB, MultinomialNB and PassiveAgressiveClassifier with hinge loss function achieved the top 3 macro-averaged f1scores of 0.726, 0.719 and 0.717, respectively. 
+
+\subsection{Multi-Class Classification}
+Random baseline compared with location names(as in the for 8 locations and
+
+\subsection{Assumption of Past Tweets}
+Using past tweets as our dataset reduced the classifier performance of almost all configurations. Overall average decrease in f1scores was 0.076 with values ranging from 0.21 to -0.09. Our assumption was wrong.
+
+\subsection{Textual Features}
+
+When we investigated why BernoulliNB is achieving the highest performance, we have seen that in most of the cases(around 90\% of the correct predictions), there was a building or place name included in the tokens(e.g. \textit{Central Park}, \textit{Empire State}). In the rest of the cases(around 10\%), there were no obvious textual features. In those cases we assumed that there was a unique token that only appeared in tweets labelled as \textit{Manhattan, NY}. BernoulliNB is the simplest of all, it only considers if a token appears in a location or not.
 
 
-\section{Conclusion and Discussion}
-To improve Empirical Bayes, we have ignored tokens that are not appearing in a location. This was not a valid solution for this problem!
-In this research we have seen that binary classification on tweet locations can get up to 73\% macro precision. Compared to previous studies dealing with this problem in a multi-class perspective, if the task is to predict if a tweet is belonging to one particular location, this looks like a promising result. But the fact of all our data belonging to geotagged tweets may compromising the validity of these results.
+\section{Conclusion}
 
-Refining the training dataset with less application generated content and more data would yield with more authentic research result.
-\noindent\begin{sidewaysfigure}
-    \centering
-    \includegraphics[width=\paperwidth]{figures/binary.eps}
-    \caption{Binary classification results}
-\end{sidewaysfigure}
-\noindent\begin{sidewaysfigure}
-    \centering
-    \includegraphics[width=\paperwidth]{figures/multi_class}
-    \caption{Multi-Class classification results}
-\end{sidewaysfigure}
-\newpage
+In our research question, we asked if there are any textual features that are shared by the people who are within a high-level location. In our experiments, we couldn't find any specific linguistic or textual features in English that hints to the geolocation(i.e. \textit{Manhattan, NY}) of a tweet, except the location names.
 
+Using the location names included in tweets, were able to improve the combined baseline(macro-averaged f1score) for binary classification around 0.16.
+
+\section{Discussion}
+
+The fact of all our data was geotagged may be adding a bias to our dataset and compromising the validity of our results. It may be possible for geotagged tweets to include more location names. Refining the training dataset with more user generated content(i.e. removing Foursquare or Yelp from source whitelist) and collecting more data would yield more authentic results and more textual features.
+
+We have seen that BernoulliNB had one of the top results in binary classification. This hints to having tf-idf scores may not be a good idea, because this method ignores these scores and uses binary values. Instead of having tf-idf scores, having binary values in the sparse array and trying different configurations on this dataset might yield to a better improvement on the baseline. But as we have concluded, we couldn't see any unique words that identify the high-level location of user.
+
+To improve Empirical Bayes, we have ignored tokens that are not appearing in a location. This solution was wrong because it sets the likelihood to 1 when it can't find a token on a location. A solution would be setting the likelihood as if that token appeared only once.
 \bibliographystyle{alpha}
 \bibliography{paper}
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
