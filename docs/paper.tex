@@ -30,9 +30,7 @@
 \maketitle
 \begin{abstract}
 
-We extracted textual features that hint to a user's location by comparing different methods. Unlike some of the previous studies, we have only used individual tweet texts, geolocation of those tweets and simplified the question to a binary classification problem. Our results are showing up to 74\% recall rates.
-
-% Previous research on Twitter user location classification is mostly focusing on multi-class prediction. Approaching at the same problem from another perspective, in some cases, it may be enough to answer if someone belongs to a location or not. In this perspective, we have compared some models for predicting tweet locations using Binary and Multi-Class Classification. We have seen that if the problem at hand is reducible to Binary Classification, it is possible to make much better predictions.
+We extracted textual features from tweets which hint to the location it was sent from. Unlike some of the previous studies, we have only used individual tweet texts and geolocation of those tweets. We have also simplified the question to a binary classification problem. Our results are showing up to 74\% recall rates in classifying if a tweet is sent from Manhattan, NY.
 
 \end{abstract}
 
@@ -43,10 +41,9 @@ Twitter is an online platform that lets users to share posts with their follower
 
 To be able to infer this information, we can try to use linguistic habits shared by the people who are within the same location. As humans, our spatial cognition deals with updating and managing the knowledge about our environment. Spatial cognition changes when we move between environments, but as we stay within the boundaries of a high level environment(i.e. state, city, borough), there may be some high-level constants that doesn't change. If some of these constants are shared commonly between people, it may lead them to have similar linguistic habits, in this case, textual features in their tweets. If we group the geotagged tweets sent within a high-level location, it may be possible to extract these features, if they exist.
 
-Using similar features, previous research tries to determine the geolocation of a tweet using multi-class classification algorithms. These methods are trying to determine the most likely geolocation for a tweet from a list(e.g. cities in a country). It is sometimes hard to do that, because we need data from all cities. Also the algorithms and the implementations become more complicated. Thus, in cases where we just want to know if someone is within a state/city/borough, this approach becomes unnecessarily heavy. In this research, we are simplifying this problem by using binary classification algorithms, which are trying to determine if a tweet sent within the boundaries of a location(i.e. Manhattan, NY). 
+Using similar features, previous research tries to determine the geolocation of a tweet using multi-class classification algorithms. These methods are trying to determine the most likely geolocation for a tweet from a list(e.g. cities in a country). It is sometimes hard to do that, because we need data from all cities. Also the algorithms and the implementations become more complicated. Thus, in cases where we just want to know if someone is within a state/city/borough, this approach becomes unnecessarily heavy. In this research, we are simplifying this problem by using binary classification algorithms, which are trying to determine if a tweet is sent within the boundaries of a location(i.e. Manhattan, NY). 
 
 Revolving around our hypothesis, the research question we're trying to answer is: "Are there textual features in tweets, that are common for people within the same location? If there are, can they help us determine if a tweet is sent within that high-level location?"
-
 
 \section{Related Work}
 
