@@ -216,7 +216,7 @@ Including bigrams, BernoulliNB, SGD with modified huber loss function and SGD wi
 Only with unigrams BernoulliNB, MultinomialNB and PassiveAgressiveClassifier with hinge loss function achieved the top 3 macro-averaged f1scores of 0.726, 0.719 and 0.717, respectively. 
 
 \subsection{Multi-Class Classification}
-Random baseline compared with location names(as in the for 8 locations and
+Random baseline combined with obvious location names, for 8 locations, gives us a macro-averaged f1-score of  0.17. In our experiments with multi-class classification, we were able to improve this score to 150\% using SGDClassifier with different loss functions.
 
 \subsection{Assumption of Past Tweets}
 Using past tweets as our dataset reduced the classifier performance of almost all configurations. Overall average decrease in f1scores was 0.076 with values ranging from 0.21 to -0.09. Our assumption was wrong.
